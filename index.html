@@ -1,1 +1,16 @@
 
+<?php
+$city = $_GET['city'] ?? 'Seoul';
+$apiKey = '5954fc895aad795b708f0e2665c7403e';
+$url = "https://api.openweathermap.org/data/2.5/weather?q=$city&units=metric&lang=kr&appid=$apiKey";
+$data = json_decode(file_get_contents($url), true);
+
+if ($data['cod'] != 200) {
+    echo "❌ '$city' 날씨 정보를 찾을 수 없습니다.";
+    exit;
+}
+
+$temp = round($data['main']['temp']);
+$desc = $data['weather'][0]['description'];
+echo "🌡️ $city 현재 날씨: $desc, ${temp}°C";
+?>
