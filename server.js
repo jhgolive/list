@@ -12,10 +12,31 @@ app.get("/", async (req, res) => {
 
   try {
     const html = await fetch(url).then(r => r.text());
-    const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-    const match = text.match(/(집회|모임|일정)[^]+?(?=등록|Copyright|KUKMIN)/);
+
+    // 날짜, 제목, 시작, 종료 추출 시도
+    const events = [];
+    const blocks = html.split(/시작|종료/).map(b => b.trim());
+
+    // 1차: 제목/지역/시간 매칭
+    const regex = /(\[\s*[^]]+\]\s*[^\n<]+).*?시작\s*([0-9:]+).*?종료\s*([0-9:]+)/gs;
+    let match;
+    while ((match = regex.exec(html)) !== null) {
+      const title = match[1].replace(/<[^>]+>/g, "").trim();
+      const start = match[2];
+      const end = match[3];
+      events.push(`${title} (${start}~${end})`);
+    }
+
+    let output = "";
+    if (events.length) {
+      output = `2025-${formatted} 일정\n` + 
+               events.map((e, i) => `${i+1}️⃣ ${e}`).join("\n");
+    } else {
+      output = "해당 날짜 일정 없음";
+    }
+
     res.set("Content-Type", "text/plain; charset=utf-8");
-    res.send(match ? match[0].substring(0, 400) : "해당 날짜 일정 없음");
+    res.send(output);
   } catch (err) {
     res.send("오류 발생: " + err.message);
   }
