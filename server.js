@@ -8,32 +8,35 @@ app.get("/", async (req, res) => {
   if (!d) return res.send("날짜 없음 (예: ?d=1009)");
 
   const formatted = d.slice(0, 2) + "-" + d.slice(2);
-  const url = "https://kukmin.libertysocial.co.kr/assembly?tab=list&date=2025-" + formatted;
+  const url = `https://kukmin.libertysocial.co.kr/assembly?tab=list&date=2025-${formatted}`;
 
   try {
     const html = await fetch(url).then(r => r.text());
 
-    // 날짜, 제목, 시작, 종료 추출 시도
-    const events = [];
-    const blocks = html.split(/시작|종료/).map(b => b.trim());
+    // li 태그 안 텍스트만 추출
+    const listMatches = [...html.matchAll(/<li[^>]*>(.*?)<\/li>/gs)];
+    const events = listMatches.map(m =>
+      m[1].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
+    );
 
-    // 1차: 제목/지역/시간 매칭
-    const regex = /(\[\s*[^]]+\]\s*[^\n<]+).*?시작\s*([0-9:]+).*?종료\s*([0-9:]+)/gs;
-    let match;
-    while ((match = regex.exec(html)) !== null) {
-      const title = match[1].replace(/<[^>]+>/g, "").trim();
-      const start = match[2];
-      const end = match[3];
-      events.push(`${title} (${start}~${end})`);
-    }
+    // 시간 포함 이벤트만 필터링
+    const regex = /(.*?)(?:시작\s*([0-9:]+))?(?:종료\s*([0-9:]+))?/;
+    const parsed = events
+      .map(e => {
+        const match = e.match(regex);
+        if (!match) return null;
+        const title = match[1].trim();
+        const start = match[2] || "";
+        const end = match[3] || "";
+        const time = start && end ? `(${start}~${end})` : "";
+        return title ? `${title} ${time}`.trim() : null;
+      })
+      .filter(Boolean)
+      .slice(0, 5); // 최대 5개 이벤트
 
-    let output = "";
-    if (events.length) {
-      output = `2025-${formatted} 일정\n` + 
-               events.map((e, i) => `${i+1}️⃣ ${e}`).join("\n");
-    } else {
-      output = "해당 날짜 일정 없음";
-    }
+    const output = parsed.length
+      ? `2025-${formatted} 일정\n` + parsed.map((e, i) => `${i + 1}️⃣ ${e}`).join("\n")
+      : "해당 날짜 일정 없음";
 
     res.set("Content-Type", "text/plain; charset=utf-8");
     res.send(output);
@@ -43,4 +46,4 @@ app.get("/", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log("✅ kukmin-schedule API running on port", PORT));
+app.listen(PORT, () => console.log(`✅ kukmin-schedule API running on port ${PORT}`));
