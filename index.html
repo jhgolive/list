@@ -14,7 +14,7 @@ async function run() {
 
   const formatted = date.slice(0,2) + "-" + date.slice(2);
   const url = "https://kukmin.libertysocial.co.kr/assembly?tab=list&date=2025-" + formatted;
-alert(url);
+alert("111");
   const html = await fetch(url).then(r => r.text());
   const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 
