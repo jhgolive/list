@@ -14,7 +14,7 @@ app.get("/", async (req, res) => {
   try {
     const html = await fetch(url).then(r => r.text());
 
-    // ✅ 정규식으로 일정 추출
+    // 정규식으로 일정 추출
     const regex = /(\[[^\]]+\]\s*.+?)\s*시작\s*([0-9:]+)\s*종료\s*([0-9:]+)/gs;
     const events = [];
     let match;
@@ -25,9 +25,9 @@ app.get("/", async (req, res) => {
       events.push(`${title} (${start}~${end})`);
     }
 
-    // 최대 5개 이벤트만 출력
+    // 모든 이벤트 출력
     const output = events.length
-      ? `2025-${formatted} 일정\n` + events.slice(0,5).map((e,i) => `${i+1}️⃣ ${e}`).join("\n")
+      ? `2025-${formatted} 일정\n` + events.map((e,i) => `${i+1}️⃣ ${e}`).join("\n")
       : "해당 날짜 일정 없음";
 
     res.set("Content-Type", "text/plain; charset=utf-8");
