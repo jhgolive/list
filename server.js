@@ -15,15 +15,18 @@ app.get("/", async (req, res) => {
     const html = await fetch(url).then(r => r.text());
 
     // 정규식으로 일정 추출
-    const regex = /<div class="schedule-title">\s*(\[.*?\].*?)\s*<\/div>.*?시작\s*([0-9:]+).*?종료\s*([0-9:]+)/gs;
-    const events = [];
-    let match;
-    while ((match = regex.exec(html)) !== null) {
-      const title = match[1].trim();
-      const start = match[2];
-      const end = match[3];
-      events.push(`${title} (${start}~${end})`);
-    }
+  const regex = /<div class="schedule-item">.*?<span class="schedule-title">\[([^\]]+)\](.*?)<\/span>.*?<span class="schedule-time">([0-9]{2}:[0-9]{2})\s*~\s*([0-9]{2}:[0-9]{2})<\/span>.*?<span class="schedule-location">(.*?)<\/span>/gs;
+  
+  let match;
+  while ((match = regex.exec(html)) !== null) {
+    const category = match[1].trim();
+    const title = match[2].trim();
+    const startTime = match[3].trim();
+    const endTime = match[4].trim();
+    const location = match[5].trim();
+  
+    console.log(`${category} - ${title} (${startTime} ~ ${endTime}) @ ${location}`);
+  }
 
     // 모든 이벤트 출력
     const output = events.length
