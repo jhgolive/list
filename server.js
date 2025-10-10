@@ -15,7 +15,7 @@ app.get("/", async (req, res) => {
     const html = await fetch(url).then(r => r.text());
 
     // 정규식으로 일정 추출
-    const regex = /(\[[^\]]+\]\s*.+?)\s*시작\s*([0-9:]+)\s*종료\s*([0-9:]+)/gs;
+    const regex = /<div class="schedule-title">\s*(\[.*?\].*?)\s*<\/div>.*?시작\s*([0-9:]+).*?종료\s*([0-9:]+)/gs;
     const events = [];
     let match;
     while ((match = regex.exec(html)) !== null) {
