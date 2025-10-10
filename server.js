@@ -14,7 +14,7 @@ app.get("/", async (req, res) => {
     // 일정 목록 추출 정규식
     const regex =
       /<a[^>]+href="\/assembly\/(\d+)[^>]*"[^>]*>[\s\S]*?<h3[^>]*>([^<]+)<\/h3>[\s\S]*?(\d{4}년\s*\d{1,2}월\s*\d{1,2}일)[\s\S]*?([0-9]{2}:[0-9]{2})\s*~\s*([0-9]{2}:[0-9]{2})[\s\S]*?장소\s*<\/div>\s*<div[^>]*>([^<]+)<\/div>/g;
-alert(regex);
+
     const results = [];
     let match;
 
