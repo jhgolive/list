@@ -14,21 +14,20 @@ app.get("/", async (req, res) => {
   try {
     const html = await fetch(url).then(r => r.text());
 
-    // 정규식으로 일정 추출
-  const regex = /<div class="schedule-item">.*?<span class="schedule-title">\[([^\]]+)\](.*?)<\/span>.*?<span class="schedule-time">([0-9]{2}:[0-9]{2})\s*~\s*([0-9]{2}:[0-9]{2})<\/span>.*?<span class="schedule-location">(.*?)<\/span>/gs;
-  
-  let match;
-  while ((match = regex.exec(html)) !== null) {
-    const category = match[1].trim();
-    const title = match[2].trim();
-    const startTime = match[3].trim();
-    const endTime = match[4].trim();
-    const location = match[5].trim();
-  
-    console.log(`${category} - ${title} (${startTime} ~ ${endTime}) @ ${location}`);
-  }
+    // 새 정규식 적용
+    const regex = /<div class="schedule-item">.*?<span class="schedule-title">\[([^\]]+)\](.*?)<\/span>.*?<span class="schedule-time">([0-9]{2}:[0-9]{2})\s*~\s*([0-9]{2}:[0-9]{2})<\/span>.*?<span class="schedule-location">(.*?)<\/span>/gs;
+    const events = [];
+    let match;
+    while ((match = regex.exec(html)) !== null) {
+      const category = match[1].trim();
+      const title = match[2].trim();
+      const start = match[3].trim();
+      const end = match[4].trim();
+      const location = match[5].trim();
+      events.push(`[${category}] ${title} (${start}~${end}) @ ${location}`);
+    }
 
-    // 모든 이벤트 출력
+    // 출력
     const output = events.length
       ? `2025-${formatted} 일정\n` + events.map((e,i) => `${i+1}️⃣ ${e}`).join("\n")
       : "해당 날짜 일정 없음";
