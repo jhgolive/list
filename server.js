@@ -15,7 +15,7 @@ function parseMMDD(mmdd) {
   const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
   const weekday = weekdays[date.getDay()];
 
-  return `${year}년${month}월${day}일(${weekday})`;
+  return `${year}년 ${month}월 ${day}일 (${weekday})`;
 }
 
 // 한국 시간 기준 오늘 날짜 → YYYY-MM-DD (URL용)
@@ -92,14 +92,14 @@ app.get("/nightbot", async (req, res) => {
       .map((m) => {
         const startKST = parseTimeToKST(m[3]);
         const endKST = parseTimeToKST(m[4]);
-        return `▶${m[2].trim()}|${m[1].trim()}|${startKST} ~ ${endKST}◀`;
+        return `${m[1].trim()}\n${m[2].trim()}\n${startKST} ~ ${endKST}`;
       })
-      .join(" ");
+      .join("\n\n");
 
     if (!scheduleText) scheduleText = "해당 날짜에 일정이 없습니다.";
 
     // 맨 위에 한국식 날짜 한 번만 추가
-    const output = `${dateStr} ${scheduleText}`;
+    const output = `${dateStr}\n\n${scheduleText}`;
 
     // 나이트봇 길이 제한 1500자
     const result = output.length > 1500 ? output.slice(0, 1500) + "…(생략)" : output;
