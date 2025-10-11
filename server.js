@@ -40,7 +40,7 @@ app.get("/nightbot", async (req, res) => {
     const text = await page.evaluate(() => document.body.innerText);
 
     // 불필요한 상단 메뉴와 지역명 제거
-    //let cleaned = text
+    let cleaned = text
       //.replace(/알림광장(전국\s*서울\s*부산\s*대구\s*인천\s*광주\s*대전\s*울산\s*세종\s*경기\s*강원\s*충청\s*전라\s*경상\s*제주)/, "")
       //.trim();
 
