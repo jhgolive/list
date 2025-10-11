@@ -4,13 +4,13 @@ import puppeteer from "puppeteer";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// MMDD → YYYY-MM-DD (현재 연도)
+// MMDD → YYYY-MM-DD 변환 (현재 연도 자동 적용)
 function parseMMDD(mmdd) {
   const today = new Date();
-  const currentYear = today.getFullYear();
+  const year = today.getFullYear();
   const month = mmdd.slice(0, 2);
   const day = mmdd.slice(2, 4);
-  return `${currentYear}-${month}-${day}`;
+  return `${year}-${month}-${day}`;
 }
 
 app.get("/nightbot", async (req, res) => {
@@ -29,43 +29,39 @@ app.get("/nightbot", async (req, res) => {
   let browser;
   try {
     browser = await puppeteer.launch({
+      headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      headless: true
     });
 
     const page = await browser.newPage();
-    await page.setUserAgent("Mozilla/5.0 (compatible; NightbotFetcher/1.0)");
-    await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
+    await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
 
-    // 일정 항목만 추출
-    const content = await page.evaluate(() => {
-      // 사이트 구조 확인 후 클래스 이름 맞춤 필요
-      const items = Array.from(document.querySelectorAll("div[class*='assembly-item']"));
+    // 페이지 전체 텍스트 추출
+    const text = await page.evaluate(() => document.body.innerText);
 
-      if (items.length > 0) {
-        return items.map(i => {
-          const title = i.querySelector("h3")?.innerText.trim() || "";
-          const start = i.querySelector(".start")?.innerText.trim() || "";
-          const end = i.querySelector(".end")?.innerText.trim() || "";
-          const participants = i.querySelector(".participants")?.innerText.trim() || "";
+    // 불필요한 상단 메뉴와 지역명 제거
+    let cleaned = text
+      .replace(/알림광장[\s\S]*?(전국\s*서울\s*부산\s*대구\s*인천\s*광주\s*대전\s*울산\s*세종\s*경기\s*강원\s*충청\s*전라\s*경상\s*제주)/, "")
+      .trim();
 
-          return `${title}\n시작: ${start}\n종료: ${end}\n참여: ${participants}`;
-        }).join("\n\n");
-      }
+    // 일정 블록만 추출 (제목 + 시작 + 종료)
+    const matches = [...cleaned.matchAll(/(.+?)\s*시작\s*([0-9:]+)\s*종료\s*([0-9:]+)/g)];
+    let output = matches
+      .map((m) => `📅 ${m[1].trim()}\n⏰ ${m[2]} ~ ${m[3]}`)
+      .join("\n\n");
 
-      return "해당 날짜에 일정이 없습니다.";
-    });
+    if (!output) output = "해당 날짜에 일정이 없습니다.";
 
-    // 나이트봇 메시지 길이 제한
-    const snippet = content.length > 1500 ? content.slice(0, 1500) + "…(생략)" : content;
-    res.type("text/plain").send(snippet);
+    // 나이트봇 길이 제한 1500자
+    const result = output.length > 1500 ? output.slice(0, 1500) + "…(생략)" : output;
 
+    res.type("text/plain").send(result);
   } catch (err) {
     console.error(err);
-    res.status(500).send("ERROR: failed to fetch page");
+    res.status(500).send("ERROR: failed to fetch schedule");
   } finally {
     if (browser) await browser.close();
   }
 });
 
-app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
