@@ -40,8 +40,7 @@ app.get("/nightbot", async (req, res) => {
     const text = await page.evaluate(() => document.body.innerText);
 
     let cleaned = text
-      // "알림광장"부터 "제주" 바로 다음 줄까지만 제거
-      .replace(/알림광장[\s\S]*?제주\s*\n/, "")
+      .replace(/알림광장[\s\S]*?(?:제주|날짜|20\d{2}년\s*\d{1,2}월)/, "")
       .trim();
 
     // 일정 블록만 추출 (제목 + 시작 + 종료)
