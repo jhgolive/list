@@ -45,7 +45,7 @@ app.get("/nightbot", async (req, res) => {
       //.trim();
 
     // 일정 블록만 추출 (제목 + 시작 + 종료)
-    const matches = [...cleaned.matchAll(/\s*시작\s*([0-9:]+)\s*종료\s*([0-9:]+)/g)];
+    const matches = [...cleaned.matchAll(/(.+?)\s*(.+?)\s*(.+?)\s*시작\s*([0-9:]+)\s*종료\s*([0-9:]+)/g)];
     let output = matches
       .map((m) => `📅 ${m[1].trim()}\n⏰ ${m[2]} ~ ${m[3]}`)
       .join("\n\n");
