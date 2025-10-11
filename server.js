@@ -4,10 +4,25 @@ import puppeteer from "puppeteer";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// /nightbot?date=2025-10-14
-app.get("/nightbot", async (req, res) => {
-  const date = req.query.date || new Date().toISOString().slice(0,10);
-  const url = `https://kukmin.libertysocial.co.kr/assembly?date=${encodeURIComponent(date)}`;
+app.get("/", async (req, res) => {
+  let input = req.query.date || "";
+  
+  // 입력값: 1014 → 2025-10-14
+  let dateStr;
+  if (/^\d{4}$/.test(input)) {
+    const month = input.slice(0,2);
+    const day = input.slice(2,4);
+    dateStr = `2025-${month}-${day}`; // 연도 고정 가능, 필요시 현재 연도 사용
+  } else {
+    // 올바른 형식이 아니면 오늘 날짜
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2,'0');
+    const dd = String(today.getDate()).padStart(2,'0');
+    dateStr = `${yyyy}-${mm}-${dd}`;
+  }
+
+  const url = `https://kukmin.libertysocial.co.kr/assembly?date=${encodeURIComponent(dateStr)}`;
 
   let browser;
   try {
