@@ -4,7 +4,7 @@ import puppeteer from "puppeteer";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// MMDD → YYYY년 MM월 DD일 (요일) 변환
+// MMDD → 한국식 날짜 (YYYY년 MM월 DD일 (요일))
 function parseMMDD(mmdd) {
   const today = new Date();
   const year = today.getFullYear();
@@ -18,13 +18,26 @@ function parseMMDD(mmdd) {
   return `${year}년 ${month}월 ${day}일 (${weekday})`;
 }
 
-// 오늘 날짜 → YYYY-MM-DD 형식 (URL용)
-function todayYYYYMMDD() {
-  const today = new Date();
-  const y = today.getFullYear();
-  const m = String(today.getMonth() + 1).padStart(2, "0");
-  const d = String(today.getDate()).padStart(2, "0");
+// 한국 시간 기준 오늘 날짜 → YYYY-MM-DD (URL용)
+function todayYYYYMMDD_KST() {
+  const now = new Date();
+  const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000); // UTC → KST
+  const y = kst.getFullYear();
+  const m = String(kst.getMonth() + 1).padStart(2, "0");
+  const d = String(kst.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
+}
+
+// 한국 시간 기준 오늘 날짜 → 한국식 문자열
+function todayKoreanStr() {
+  const now = new Date();
+  const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  const y = kst.getFullYear();
+  const m = kst.getMonth() + 1;
+  const d = kst.getDate();
+  const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
+  const weekday = weekdays[kst.getDay()];
+  return `${y}년 ${m}월 ${d}일 (${weekday})`;
 }
 
 app.get("/nightbot", async (req, res) => {
@@ -37,10 +50,8 @@ app.get("/nightbot", async (req, res) => {
     const today = new Date();
     urlDateStr = `${today.getFullYear()}-${input.slice(0, 2)}-${input.slice(2, 4)}`;
   } else {
-    const today = new Date();
-    const mmdd = String(today.getMonth() + 1).padStart(2, "0") + String(today.getDate()).padStart(2, "0");
-    dateStr = parseMMDD(mmdd);
-    urlDateStr = todayYYYYMMDD();
+    dateStr = todayKoreanStr();
+    urlDateStr = todayYYYYMMDD_KST();
   }
 
   const url = `https://kukmin.libertysocial.co.kr/assembly?date=${encodeURIComponent(urlDateStr)}`;
