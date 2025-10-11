@@ -40,6 +40,18 @@ function todayKoreanStr() {
   return `${y}년 ${m}월 ${d}일 (${weekday})`;
 }
 
+// 시간 문자열을 KST로 변환
+function parseTimeToKST(timeStr) {
+  // timeStr 예: "10:30"
+  const [h, m] = timeStr.split(":").map(Number);
+  const now = new Date();
+  // 현재 날짜 기준 UTC 시간 생성
+  const dateUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), h, m));
+  // KST = UTC + 9시간
+  const kst = new Date(dateUTC.getTime() + 9 * 60 * 60 * 1000);
+  return `${kst.getHours().toString().padStart(2, "0")}:${kst.getMinutes().toString().padStart(2, "0")}`;
+}
+
 app.get("/nightbot", async (req, res) => {
   let input = req.query.date || ""; // MMDD 입력 가능
   let dateStr;       // 한국식 날짜 문자열
@@ -77,7 +89,11 @@ app.get("/nightbot", async (req, res) => {
     // 일정 블록만 추출 (제목 + 시작 + 종료)
     const matches = [...cleaned.matchAll(/(.+?)\s*(.+?)\s*시작\s*([0-9:]+)\s*종료\s*([0-9:]+)/g)];
     let scheduleText = matches
-      .map((m) => `${m[1].trim()}\n${m[2].trim()}\n${m[3]} ~ ${m[4]}`)
+      .map((m) => {
+        const startKST = parseTimeToKST(m[3]);
+        const endKST = parseTimeToKST(m[4]);
+        return `${m[1].trim()}\n${m[2].trim()}\n${startKST} ~ ${endKST}`;
+      })
       .join("\n\n");
 
     if (!scheduleText) scheduleText = "해당 날짜에 일정이 없습니다.";
