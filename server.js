@@ -47,7 +47,7 @@ app.get("/nightbot", async (req, res) => {
     // 일정 블록만 추출 (제목 + 시작 + 종료)
     const matches = [...cleaned.matchAll(/(.+?)\s*(.+?)\s*(.+?)\s*시작\s*([0-9:]+)\s*종료\s*([0-9:]+)/g)];
     let output = matches
-      .map((m) => `📅 ${m[1].trim()}\n⏰ ${m[2]} ~ ${m[3]}`)
+      .map((m) => `${m[1].trim()}\n${m[2].trim()}\n📅 ${m[3].trim()}\n⏰ ${m[4]} ~ ${m[5]}`)
       .join("\n\n");
 
     if (!output) output = "해당 날짜에 일정이 없습니다.";
