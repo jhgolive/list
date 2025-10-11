@@ -92,14 +92,14 @@ app.get("/nightbot", async (req, res) => {
       .map((m) => {
         const startKST = parseTimeToKST(m[3]);
         const endKST = parseTimeToKST(m[4]);
-        return `[${m[2].trim()}\n |${m[1].trim()}\n ${startKST} ~ ${endKST}]`;
+        return `[${m[2].trim()} |${m[1].trim()} ${startKST} ~ ${endKST}]`;
       })
-      .join("\n\n");
+      .join(" ");
 
     if (!scheduleText) scheduleText = "해당 날짜에 일정이 없습니다.";
 
     // 맨 위에 한국식 날짜 한 번만 추가
-    const output = `${dateStr}\n\n${scheduleText}`;
+    const output = `${dateStr} ${scheduleText}`;
 
     // 나이트봇 길이 제한 1500자
     const result = output.length > 1500 ? output.slice(0, 1500) + "…(생략)" : output;
