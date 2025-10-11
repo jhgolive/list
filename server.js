@@ -92,7 +92,7 @@ app.get("/nightbot", async (req, res) => {
       .map((m) => {
         const startKST = parseTimeToKST(m[3]);
         const endKST = parseTimeToKST(m[4]);
-        return `【${m[2].trim()}/${m[1].trim()}/${startKST} ~ ${endKST}】`;
+        return `▷${m[2].trim()}|${m[1].trim()}|${startKST} ~ ${endKST}◁`;
       })
       .join(" ");
 
