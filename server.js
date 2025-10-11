@@ -15,7 +15,7 @@ function parseMMDD(mmdd) {
   const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
   const weekday = weekdays[date.getDay()];
 
-  return `${year}년 ${month}월 ${day}일 (${weekday})`;
+  return `${year}년${month}월${day}일(${weekday})`;
 }
 
 // 한국 시간 기준 오늘 날짜 → YYYY-MM-DD (URL용)
@@ -92,7 +92,7 @@ app.get("/nightbot", async (req, res) => {
       .map((m) => {
         const startKST = parseTimeToKST(m[3]);
         const endKST = parseTimeToKST(m[4]);
-        return `[${m[2].trim()} |${m[1].trim()} ${startKST} ~ ${endKST}]`;
+        return `【${m[2].trim()}/${m[1].trim()}/${startKST} ~ ${endKST}】`;
       })
       .join(" ");
 
