@@ -18,10 +18,10 @@ app.get("/nightbot", async (req, res) => {
   let dateStr;
 
   if (/^\d{4}$/.test(input)) {
-    dateStr = parseMMDD(input); // MMDD → YYYY-MM-DD
+    dateStr = parseMMDD(input);
   } else {
     const today = new Date();
-    dateStr = today.toISOString().slice(0, 10); // 오늘 날짜
+    dateStr = today.toISOString().slice(0, 10);
   }
 
   const url = `https://kukmin.libertysocial.co.kr/assembly?date=${encodeURIComponent(dateStr)}`;
@@ -37,14 +37,23 @@ app.get("/nightbot", async (req, res) => {
     await page.setUserAgent("Mozilla/5.0 (compatible; NightbotFetcher/1.0)");
     await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
 
-    // 일정 항목만 추출 (사이트 구조에 맞게 조정 가능)
+    // 일정 항목만 추출
     const content = await page.evaluate(() => {
+      // 사이트 구조 확인 후 클래스 이름 맞춤 필요
       const items = Array.from(document.querySelectorAll("div[class*='assembly-item']"));
+
       if (items.length > 0) {
-        return items.map(i => i.innerText.trim()).join("\n\n");
+        return items.map(i => {
+          const title = i.querySelector("h3")?.innerText.trim() || "";
+          const start = i.querySelector(".start")?.innerText.trim() || "";
+          const end = i.querySelector(".end")?.innerText.trim() || "";
+          const participants = i.querySelector(".participants")?.innerText.trim() || "";
+
+          return `${title}\n시작: ${start}\n종료: ${end}\n참여: ${participants}`;
+        }).join("\n\n");
       }
-      // fallback: 전체 텍스트
-      return document.body.innerText.trim();
+
+      return "해당 날짜에 일정이 없습니다.";
     });
 
     // 나이트봇 메시지 길이 제한
