@@ -93,6 +93,7 @@ app.get("/nightbot", async (req, res) => {
         const startKST = parseTimeToKST(m[3]);
         const endKST = parseTimeToKST(m[4]);
         return `${m[2].trim()}\n${m[1].trim()}\n${startKST} ~ ${endKST}`;
+        //return `◀${m[2].trim()}\n/${m[1].trim()}\n/${startKST} ~ ${endKST}▶`;
       })
       .join("\n\n");
 
