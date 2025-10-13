@@ -185,8 +185,8 @@ app.get("/nightbot", async (req, res) => {
     // =====================
     // 나이트봇용 한 줄 + 구분자 출력
     // =====================
-    const output = results.map(r => `📌 ${r.text.replace(/\n/g, " | ")}`).join(" — "); // 이벤트 간 구분
-    //const output = `${dateStr}\n\n${results.map(r => r.text).join("\n")}`;    
+    const output = `${dateStr}\n\n${results.map(r => `📌 ${r.text.replace(/\n/g, " | ")}`).join(" — ")}`; // 이벤트 간 구분
+    //const output = `${dateStr}\n\n${results.map(r => r.text).join("\n")}`; 
     const result = output.length > 1500 ? output.slice(0, 1500) + "…(생략)" : output;
 
     res.type("text/plain").send(result);
