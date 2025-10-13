@@ -1,3 +1,4 @@
+// 메이 페이지 일정목록에 장소가 없음
 import express from "express";
 import puppeteer from "puppeteer";
 
