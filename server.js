@@ -187,7 +187,7 @@ app.get("/nightbot", async (req, res) => {
     // =====================
     //const output = `${dateStr}\n\n${results.map(r => `📌 ${r.text.replace(/\n/g, " | ")}`).join(" — ")}`; // 이벤트 간 구분
     //const output = `${dateStr}\n\n${results.map(r => `📌 ${r.text.replace(/\n/g, "\n | ")}`).join("\n — ")}`; // 이벤트 간 구분
-    const output = `${dateStr}\n\n${results.map(r => `📌 ${r.text.trim().replace(/\n/g, "\n | ")}`).join("\n — ")}`;
+    const output = `${dateStr}\n\n${results.map(r => `📌 ${r.text.trim().replace(/\n/g, "\n | ")}`).join("\n — \n")}`;
         
     
     //const output = `${dateStr}\n\n${results.map(r => r.text).join("\n")}`; 
