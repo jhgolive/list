@@ -104,7 +104,7 @@ app.get("/nightbot", async (req, res) => {
     const output = `${dateStr}\n\n${scheduleText}`;
 
     // 나이트봇 길이 제한 1500자
-    const result = output.length > 1500 ? output.slice(0, 1500) + "…(생략)" : output;
+    const result = output.length > 3000 ? output.slice(0, 3000) + "…(생략)" : output;
 
     res.type("text/plain").send(result);
   } catch (err) {
