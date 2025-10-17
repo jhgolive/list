@@ -159,7 +159,7 @@ app.get("/nightbot", async (req, res) => {
             if (event && event.title) {
               const kstTime = convertTimeRangeToKST(event.time);
               return {
-                text: `제목: ${event.title}\n주관: ${event.organizer || "-"}\n장소: ${event.place || "-"}\n시간: ${kstTime || "-"}\n`,
+                text: `: ${event.title}\n주관: ${event.organizer || "-"}\n장소: ${event.place || "-"}\n시간: ${kstTime || "-"}\n`,
                 time: kstTime ? timeToNumber(kstTime.split("~")[0].trim()) : 0,
               };
             }
@@ -187,7 +187,8 @@ app.get("/nightbot", async (req, res) => {
     // =====================
     //const output = `${dateStr}\n\n${results.map(r => `📌 ${r.text.replace(/\n/g, " | ")}`).join(" — ")}`; // 이벤트 간 구분
     //const output = `${dateStr}\n\n${results.map(r => `📌 ${r.text.replace(/\n/g, "\n | ")}`).join("\n — ")}`; // 이벤트 간 구분
-    const output = `📌 ${dateStr}\n${results.map(r => `💥 ${r.text.trim().replace(/\n/g, "\n | ")}`).join("\n  \n")}`;
+    //const output = `📌 ${dateStr}\n${results.map(r => `💥 ${r.text.trim().replace(/\n/g, "\n | ")}`).join("\n  \n")}`;
+    const output = `📌 ${dateStr}\n${results.map((r, i) => `💥 ${i + 1} ${r.text.trim().replace(/\n/g, "\n | ")}`).join("\n\n")}`; // 앞에 넘버
         
     //const output = `${dateStr}\n\n${results.map(r => r.text).join("\n")}`; 
     const result = output.length > 1500 ? output.slice(0, 1500) + "…(생략)" : output;
