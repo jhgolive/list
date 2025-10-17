@@ -191,7 +191,7 @@ app.get("/nightbot", async (req, res) => {
     const output = `🌟 ${dateStr}\n${results.map((r, i) => `💥No.${i + 1}${r.text.trim().replace(/\n/g, "\n | ")}`).join("\n \n")}`; // 앞에 넘버
         
     //const output = `${dateStr}\n\n${results.map(r => r.text).join("\n")}`; 
-    const result = output.length > 1500 ? output.slice(0, 1500) + "…(생략)" : output;
+    const result = output.length > 3000 ? output.slice(0, 3000) + "…(생략)" : output;
 
     res.type("text/plain").send(result);
   } catch (err) {
