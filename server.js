@@ -31,6 +31,23 @@ function formatKoreanDate(date = new Date()) {
 }
 
 // ========================
+// 🕒 한국시간 포맷
+// ========================
+function formatKST(date = new Date()) {
+  const kst = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+  const Y = kst.getFullYear();
+  const M = String(kst.getMonth() + 1).padStart(2, "0");
+  const D = String(kst.getDate()).padStart(2, "0");
+  const h = String(kst.getHours()).padStart(2, "0");
+  const m = String(kst.getMinutes()).padStart(2, "0");
+  return `${Y}-${M}-${D} ${h}:${m}`;
+}
+
+function getKSTNow() {
+  return new Date(Date.now() + 9 * 60 * 60 * 1000);
+}
+
+// ========================
 // 🧭 Puppeteer 데이터 수집
 // ========================
 async function fetchAssemblyData(dateStr) {
@@ -98,7 +115,10 @@ async function fetchAssemblyData(dateStr) {
 // ========================
 function saveCache(dateStr, data) {
   const file = path.join(CACHE_DIR, `${dateStr}.json`);
-  fs.writeFileSync(file, JSON.stringify({ updated: new Date().toISOString(), data }, null, 2));
+  fs.writeFileSync(
+    file,
+    JSON.stringify({ updated: formatKST(getKSTNow()), data }, null, 2)
+  );
 }
 
 function readCache(dateStr) {
