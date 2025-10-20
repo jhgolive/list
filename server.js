@@ -6,6 +6,7 @@ import path from "path";
 const app = express();
 const PORT = process.env.PORT || 3000;
 const CACHE_DIR = "./cache";
+
 if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR);
 
 // ========================
@@ -41,7 +42,6 @@ async function fetchAssemblyData(dateStr) {
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
 
-  // 메인 목록에서 개별 일정 링크 추출
   const links = await page.evaluate(() =>
     Array.from(document.querySelectorAll("a[href*='/assembly/']"))
       .map(a => a.href)
@@ -90,7 +90,6 @@ async function fetchAssemblyData(dateStr) {
   }
 
   await browser.close();
-
   return `🌟 ${formatKoreanDate(new Date(dateStr))}\n\n${results.join("\n\n")}`;
 }
 
@@ -109,12 +108,16 @@ function readCache(dateStr) {
 }
 
 // ========================
-// 🧩 오늘~7일치 캐싱
+// 🧩 주간 캐싱 + 이전 캐시 삭제
 // ========================
 async function updateWeekCache() {
   console.log("🕐 주간 캐싱 시작...");
+  const keepDates = [];
+
   for (let i = 0; i < 7; i++) {
     const dateStr = formatYYYYMMDD(i);
+    keepDates.push(dateStr);
+
     try {
       console.log(`📅 ${dateStr} 수집 중...`);
       const data = await fetchAssemblyData(dateStr);
@@ -124,7 +127,18 @@ async function updateWeekCache() {
       console.error(`❌ ${dateStr} 실패:`, err.message);
     }
   }
-  console.log("🏁 주간 캐싱 완료");
+
+  // 🔥 이전 날짜 캐시 삭제
+  const files = fs.readdirSync(CACHE_DIR);
+  for (const file of files) {
+    const dateStr = file.replace(".json", "");
+    if (!keepDates.includes(dateStr)) {
+      fs.unlinkSync(path.join(CACHE_DIR, file));
+      console.log(`🗑️ ${file} 삭제됨`);
+    }
+  }
+
+  console.log("🏁 주간 캐싱 완료 + 이전 캐시 정리 완료");
 }
 
 // ========================
@@ -132,7 +146,7 @@ async function updateWeekCache() {
 // ========================
 app.get("/update", async (req, res) => {
   await updateWeekCache();
-  res.send("✅ 수동 업데이트 완료 (오늘부터 7일치 캐시됨)");
+  res.send("✅ 수동 업데이트 완료 (오늘부터 7일치 캐시, 이전 캐시 삭제됨)");
 });
 
 // ========================
