@@ -204,4 +204,3 @@ app.get("/nightbot", async (req, res) => {
 // 서버 시작
 // =====================
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
-
