@@ -15,36 +15,37 @@ if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR);
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
 function getKSTDate(offsetDays = 0) {
-  const d = new Date(Date.now() + 9 * 60 * 60 * 1000);
-  d.setDate(d.getDate() + offsetDays);
-  return d;
+  const now = new Date();
+  const kstString = now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
+  const kstDate = new Date(kstString);
+  kstDate.setDate(kstDate.getDate() + offsetDays);
+  return kstDate;
 }
 
 function formatYYYYMMDD(offsetDays = 0) {
   const d = getKSTDate(offsetDays);
-  return d.toISOString().slice(0, 10);
+  const Y = d.getFullYear();
+  const M = String(d.getMonth() + 1).padStart(2, "0");
+  const D = String(d.getDate()).padStart(2, "0");
+  return `${Y}-${M}-${D}`;
 }
 
 function formatKoreanDate(date = new Date()) {
-  const kst = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+  const kst = new Date(date.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }));
   return `${kst.getFullYear()}년 ${kst.getMonth() + 1}월 ${kst.getDate()}일 (${WEEKDAYS[kst.getDay()]})`;
 }
 
 // ========================
-// 🕒 한국시간 포맷
+// 🕒 KST 포맷
 // ========================
 function formatKST(date = new Date()) {
-  const kst = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+  const kst = new Date(date.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }));
   const Y = kst.getFullYear();
   const M = String(kst.getMonth() + 1).padStart(2, "0");
   const D = String(kst.getDate()).padStart(2, "0");
   const h = String(kst.getHours()).padStart(2, "0");
   const m = String(kst.getMinutes()).padStart(2, "0");
   return `${Y}-${M}-${D} ${h}:${m}`;
-}
-
-function getKSTNow() {
-  return new Date(Date.now() + 9 * 60 * 60 * 1000);
 }
 
 // ========================
@@ -117,7 +118,7 @@ function saveCache(dateStr, data) {
   const file = path.join(CACHE_DIR, `${dateStr}.json`);
   fs.writeFileSync(
     file,
-    JSON.stringify({ updated: formatKST(getKSTNow()), data }, null, 2)
+    JSON.stringify({ updated: formatKST(new Date()), data }, null, 2)
   );
 }
 
