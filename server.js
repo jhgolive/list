@@ -14,6 +14,13 @@ if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR);
 // ========================
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
+// 문자열 "YYYY-MM-DD" → Date 객체로 안정적 변환
+function parseDateString(dateStr) {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+// KST 기준 Date 객체 가져오기 (offsetDays: 오늘 기준)
 function getKSTDate(offsetDays = 0) {
   const now = new Date();
   const kstString = now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
@@ -22,6 +29,7 @@ function getKSTDate(offsetDays = 0) {
   return kstDate;
 }
 
+// YYYY-MM-DD 형식 문자열
 function formatYYYYMMDD(offsetDays = 0) {
   const d = getKSTDate(offsetDays);
   const Y = d.getFullYear();
@@ -30,16 +38,17 @@ function formatYYYYMMDD(offsetDays = 0) {
   return `${Y}-${M}-${D}`;
 }
 
-function formatKoreanDate(date = new Date()) {
-  const kst = new Date(date.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }));
+// 한국어 날짜 포맷
+function formatKoreanDate(dateInput = new Date()) {
+  const d = typeof dateInput === "string" ? parseDateString(dateInput) : dateInput;
+  const kst = new Date(d.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }));
   return `${kst.getFullYear()}년 ${kst.getMonth() + 1}월 ${kst.getDate()}일 (${WEEKDAYS[kst.getDay()]})`;
 }
 
-// ========================
-// 🕒 KST 포맷
-// ========================
-function formatKST(date = new Date()) {
-  const kst = new Date(date.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }));
+// KST YYYY-MM-DD HH:mm
+function formatKST(dateInput = new Date()) {
+  const d = dateInput instanceof Date ? dateInput : parseDateString(dateInput);
+  const kst = new Date(d.toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }));
   const Y = kst.getFullYear();
   const M = String(kst.getMonth() + 1).padStart(2, "0");
   const D = String(kst.getDate()).padStart(2, "0");
@@ -69,7 +78,7 @@ async function fetchAssemblyData(dateStr) {
 
   if (!links.length) {
     await browser.close();
-    return `${formatKoreanDate(new Date(dateStr))}\n\n📭 해당 날짜에 일정이 없습니다.`;
+    return `${formatKoreanDate(dateStr)}\n\n📭 해당 날짜에 일정이 없습니다.`;
   }
 
   const results = [];
@@ -108,7 +117,7 @@ async function fetchAssemblyData(dateStr) {
   }
 
   await browser.close();
-  return `🌟 ${formatKoreanDate(new Date(dateStr))}\n\n${results.join("\n\n")}`;
+  return `🌟 ${formatKoreanDate(dateStr)}\n\n${results.join("\n\n")}`;
 }
 
 // ========================
