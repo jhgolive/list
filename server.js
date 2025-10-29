@@ -121,7 +121,7 @@ app.get("/nightbot", async (req, res) => {
       return;
     }
 
-    const concurrency = 3; // 병렬처리 브라우저 갯수
+    const concurrency = 1; // 병렬처리 브라우저 갯수
     const results = [];
 
     for (let i = 0; i < links.length; i += concurrency) {
