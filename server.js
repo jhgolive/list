@@ -141,11 +141,11 @@ app.get("/nightbot", async (req, res) => {
           try {
             await detailPage.goto(link, { waitUntil: "networkidle2", timeout: 60000 });
             await detailPage
-              .waitForSelector("header h1.line-clamp-2", { timeout: 10000 })
+              .waitForSelector("header.flex.justify-between h1.line-clamp-2", { timeout: 10000 })
               .catch(() => {});
 
             const event = await detailPage.evaluate(() => {
-              const title = document.querySelector("header h1.line-clamp-2")?.innerText.trim() || null;
+              const title = document.querySelector("header.flex.justify-between h1.line-clamp-2")?.innerText.trim() || null;
               const container = document.querySelector(".flex.flex-col.gap-2.border-b.px-4.pb-4.pt-2");
               if (!container) return { title };
 
