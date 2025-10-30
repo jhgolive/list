@@ -85,15 +85,6 @@ function parseMMDD(mmdd) {
   const day = parseInt(mmdd.slice(2, 4), 10);
   return formatKoreanDate(new Date(year, month - 1, day));
 }
-function formatKSTTime() {
-  const kst = new Date(Date.now() + 9 * 60 * 60 * 1000);
-  const y = kst.getFullYear();
-  const m = String(kst.getMonth() + 1).padStart(2, "0");
-  const d = String(kst.getDate()).padStart(2, "0");
-  const hh = String(kst.getHours()).padStart(2, "0");
-  const mm = String(kst.getMinutes()).padStart(2, "0");
-  return `${y}-${m}-${d} ${hh}:${mm}`;
-}
 
 // =====================
 // /nightbot 라우터
@@ -194,11 +185,10 @@ app.get("/nightbot", async (req, res) => {
     // =====================
     // 나이트봇용 한 줄 + 구분자 출력
     // =====================
-    const updatedTime = formatKSTTime();
     //const output = `${dateStr}\n\n${results.map(r => `📌 ${r.text.replace(/\n/g, " | ")}`).join(" — ")}`; // 이벤트 간 구분
     //const output = `${dateStr}\n\n${results.map(r => `📌 ${r.text.replace(/\n/g, "\n | ")}`).join("\n — ")}`; // 이벤트 간 구분
     //const output = `📌 ${dateStr}\n${results.map(r => `💥 ${r.text.trim().replace(/\n/g, "\n | ")}`).join("\n  \n")}`;
-    const output = `🌟 ${dateStr}\n\n${results.map((r, i) => `💥No${i + 1}${r.text.trim().replace(/\n/g, "\n | ")}`).join("\n  \n")}업데이트: ${updatedTime}`; // 앞에 넘버
+    const output = `🌟 ${dateStr}\n${results.map((r, i) => `💥No${i + 1}${r.text.trim().replace(/\n/g, "\n | ")}`).join("\n  \n")}`; // 앞에 넘버
         
     //const output = `${dateStr}\n\n${results.map(r => r.text).join("\n")}`; 
     const result = output.length > 3000 ? output.slice(0, 3000) + "…(생략)" : output;
