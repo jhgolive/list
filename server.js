@@ -194,6 +194,3 @@ app.get("/nightbot", async (req, res) => {
 // 서버 시작
 // =====================
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
-
-해당 날짜에 일정이 없습니다.
-이렇게 나오는데 복잡한 수식 다 빼고 내용 나오는지만 확인하게 만들어줘
