@@ -193,7 +193,14 @@ app.get("/nightbot", async (req, res) => {
       return;
     }
 
-    results.sort((a, b) => a.time - b.time);
+    //results.sort((a, b) => a.time - b.time);
+    results.sort((a, b) => {
+      const [aStart, aEnd] = (a.time || "").split("~").map(t => timeToNumber(t.trim()));
+      const [bStart, bEnd] = (b.time || "").split("~").map(t => timeToNumber(t.trim()));
+    
+      if (aStart !== bStart) return aStart - bStart; // 시작시간 기준
+      return (aEnd || 0) - (bEnd || 0); // 종료시간 기준
+    });
 
     // =====================
     // 나이트봇용 한 줄 + 구분자 출력
