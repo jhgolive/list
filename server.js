@@ -1,5 +1,9 @@
 import express from "express";
-import puppeteer from "puppeteer";
+//import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
+puppeteer.use(StealthPlugin());
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -117,8 +121,6 @@ app.get("/nightbot", async (req, res) => {
     const browser = await getBrowser();
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
-    const content = await page.content();
-    console.log(content.slice(0, 500));
 
     const links = await page.evaluate(() =>
       Array.from(document.querySelectorAll("a[href*='/assembly/']"))
