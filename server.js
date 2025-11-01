@@ -1,3 +1,103 @@
+import express from "express";
+import puppeteer from "puppeteer";
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// =====================
+// 전역 브라우저 재사용
+// =====================
+let browser;
+async function getBrowser() {
+  if (!browser || !browser.isConnected?.()) {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+    console.log("🚀 Puppeteer 브라우저 새로 실행됨");
+  }
+  return browser;
+}
+
+// =====================
+// 브라우저 종료 처리
+// =====================
+async function closeBrowser() {
+  if (browser && browser.isConnected?.()) {
+    await browser.close();
+    console.log("🛑 Puppeteer 브라우저 종료됨");
+  }
+}
+
+process.on("SIGINT", async () => {
+  await closeBrowser();
+  process.exit(0);
+});
+
+process.on("exit", async () => {
+  await closeBrowser();
+});
+
+process.on("uncaughtException", async (err) => {
+  console.error("💥 예외 발생:", err);
+  await closeBrowser();
+  process.exit(1);
+});
+
+// =====================
+// 날짜/시간 함수
+// =====================
+const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
+function getKSTDate(date = new Date()) {
+  return new Date(date.getTime() + 9 * 60 * 60 * 1000);
+}
+function formatKoreanDate(date = new Date()) {
+  const kst = getKSTDate(date);
+  return `${kst.getFullYear()}년 ${kst.getMonth() + 1}월 ${kst.getDate()}일 (${WEEKDAYS[kst.getDay()]})`;
+}
+function formatYYYYMMDD(date = new Date()) {
+  const kst = getKSTDate(date);
+  const m = String(kst.getMonth() + 1).padStart(2, "0");
+  const d = String(kst.getDate()).padStart(2, "0");
+  return `${kst.getFullYear()}-${m}-${d}`;
+}
+function toKST(timeStr) {
+  if (!timeStr || !/^\d{1,2}:\d{2}$/.test(timeStr.trim())) return timeStr;
+  const [h, m] = timeStr.split(":").map(Number);
+  const utc = new Date(Date.UTC(2000, 0, 1, h, m));
+  const kst = getKSTDate(utc);
+  return `${String(kst.getHours()).padStart(2, "0")}:${String(kst.getMinutes()).padStart(2, "0")}`;
+}
+function convertTimeRangeToKST(range) {
+  if (!range) return range;
+  const parts = range.split("~").map(s => s.trim());
+  return parts.length === 2 ? `${toKST(parts[0])} ~ ${toKST(parts[1])}` : toKST(parts[0]);
+}
+function timeToNumber(timeStr) {
+  if (!timeStr) return 0;
+  const [h, m] = timeStr.split(":").map(Number);
+  return h * 60 + m;
+}
+function parseMMDD(mmdd) {
+  const today = getKSTDate();
+  const year = today.getFullYear();
+  const month = parseInt(mmdd.slice(0, 2), 10);
+  const day = parseInt(mmdd.slice(2, 4), 10);
+  return formatKoreanDate(new Date(year, month - 1, day));
+}
+function formatKSTTime() {
+  const kst = new Date(Date.now() + 9 * 60 * 60 * 1000);
+  const y = kst.getFullYear();
+  const m = String(kst.getMonth() + 1).padStart(2, "0");
+  const d = String(kst.getDate()).padStart(2, "0");
+  const hh = String(kst.getHours()).padStart(2, "0");
+  const mm = String(kst.getMinutes()).padStart(2, "0");
+  return `${y}-${m}-${d} ${hh}:${mm}`;
+}
+
+// =====================
+// /nightbot 라우터
+// =====================
 app.get("/nightbot", async (req, res) => {
   let input = req.query.date || "";
   let dateStr, urlDateStr;
@@ -89,3 +189,11 @@ app.get("/nightbot", async (req, res) => {
     res.status(500).send(`에러 발생: ${err.message}`);
   }
 });
+
+// =====================
+// 서버 시작
+// =====================
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+
+해당 날짜에 일정이 없습니다.
+이렇게 나오는데 복잡한 수식 다 빼고 내용 나오는지만 확인하게 만들어줘
