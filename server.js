@@ -265,9 +265,9 @@ app.get("/nightbot", async (req, res) => {
     let finalOutput = "";
 
     // 첫 페이지면 헤더 붙이기
-    if (part === 1) {
-      finalOutput += `🌟 ${dateStr}\n\n`;
-    }
+    //if (part === 1) {
+      //finalOutput += `🌟 ${dateStr}\n\n`;
+    //}
     
     // 본문 붙이기
     //finalOutput += body;
@@ -287,9 +287,9 @@ app.get("/nightbot", async (req, res) => {
     }
     
     // 마지막 페이지면 푸터 붙이기
-    if (part === chunks.length) {
-      finalOutput += `\n\n💫 ${updatedTime} 업데이트`;
-    }
+    //if (part === chunks.length) {
+      //finalOutput += `\n\n💫 ${updatedTime} 업데이트`;
+    //}
         
     res.type("text/plain").send(finalOutput);
   } catch (err) {
