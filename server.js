@@ -229,7 +229,9 @@ app.get("/nightbot", async (req, res) => {
     const result = output.length > 3000 ? output.slice(0, 3000) + "…(생략)" : output;
 
     //res.type("text/plain").send(result);
-    const part = parseInt(req.query.part || "1", 10);
+    //const part = parseInt(req.query.part || "1", 10);
+    // part 쿼리 처리
+    const part = req.query.part ? parseInt(req.query.part, 10) : null; // null이면 전체
     //const chunks = splitMessage(result);
     //const chunk = chunks[part - 1] || "더 이상 내용이 없습니다";
     
@@ -268,13 +270,27 @@ app.get("/nightbot", async (req, res) => {
     }
     
     // 본문 붙이기
-    finalOutput += body;
+    //finalOutput += body;
+    if (part) {
+      // 청크별 출력
+      const body = chunks[part - 1];
+      if (!body) {
+        return res.status(204).send(); // 204 No Content
+      }
+    
+      if (part === 1) finalOutput += `${header}\n\n`;
+      finalOutput += body;
+      if (part === chunks.length) finalOutput += `\n\n${footer}`;
+    } else {
+      // part 없으면 전체 출력
+      finalOutput += `${header}\n\n${chunks.join("\n\n")}\n\n${footer}`;
+    }
     
     // 마지막 페이지면 푸터 붙이기
     if (part === chunks.length) {
       finalOutput += `\n\n💫 ${updatedTime} 업데이트`;
     }
-    
+        
     res.type("text/plain").send(finalOutput);
   } catch (err) {
     console.error(err);
