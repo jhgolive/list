@@ -101,11 +101,11 @@ function formatKSTTime() {
 // =====================
 // 텍스트 분할  3개 일정씩
 // =====================
-function splitByEvents(events, perChunk = 3) {
+function splitByEvents(texts, perChunk = 3) {
   const chunks = [];
-  for (let i = 0; i < events.length; i += perChunk) {
-    const slice = events.slice(i, i + perChunk);
-    chunks.push(slice.map(r => r.text).join("\n\n"));
+  for (let i = 0; i < texts.length; i += perChunk) {
+    const slice = texts.slice(i, i + perChunk);
+    chunks.push(slice.join("\n\n"));
   }
   return chunks;
 }
@@ -233,8 +233,14 @@ app.get("/nightbot", async (req, res) => {
     //res.type("text/plain").send(chunk);
 
     // 일정 3개씩 묶기
-    const chunks = splitByEvents(results, 3);
+    //const chunks = splitByEvents(results, 3);
+    // 번호 & 라인 포맷 적용 후 분할
+    const formatted = results.map((r, i) => {
+      return `💥No${i + 1}${r.text.trim().replace(/\n/g, "\n | ")}`;
+    });
     
+    const chunks = splitByEvents(formatted, 3);
+
     if (!chunks.length) {
       return res.type("text/plain").send(`${dateStr}\n \n해당 날짜에 일정이 없습니다.`);
     }
