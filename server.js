@@ -253,7 +253,12 @@ app.get("/nightbot", async (req, res) => {
     const header = `🌟 ${dateStr}`;
     const footer = `💫 ${updatedTime} 업데이트`;
     
-    const body = chunks[part - 1] || "더 이상 내용이 없습니다";
+    const body = chunks[part - 1];
+
+    // 청크가 없으면 아예 응답하지 않음
+    if (!body) {
+      return res.status(204).send(); // 204 No Content
+    }
     
     let finalOutput = "";
 
