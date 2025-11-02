@@ -228,9 +228,9 @@ app.get("/nightbot", async (req, res) => {
     //res.type("text/plain").send(result);
     const part = parseInt(req.query.part || "1", 10);
     const chunks = splitMessage(result);
-    const output = chunks[part - 1] || "더 이상 내용이 없습니다";
+    const chunk = chunks[part - 1] || "더 이상 내용이 없습니다";
     
-    res.type("text/plain").send(output);
+    res.type("text/plain").send(chunk);
   } catch (err) {
     console.error(err);
     res.status(500).send(`에러 발생: ${err.message}`);
