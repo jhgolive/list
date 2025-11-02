@@ -99,6 +99,18 @@ function formatKSTTime() {
 }
 
 // =====================
+// 텍스트 분할
+// =====================
+function splitMessage(text, limit = 350) { 
+  const parts = [];
+  while (text.length > 0) {
+    parts.push(text.slice(0, limit));
+    text = text.slice(limit);
+  }
+  return parts;
+}
+
+// =====================
 // /nightbot 라우터
 // =====================
 app.get("/nightbot", async (req, res) => {
@@ -213,7 +225,12 @@ app.get("/nightbot", async (req, res) => {
     //const output = `${dateStr}\n\n${results.map(r => r.text).join("\n")}`; 
     const result = output.length > 3000 ? output.slice(0, 3000) + "…(생략)" : output;
 
-    res.type("text/plain").send(result);
+    //res.type("text/plain").send(result);
+    const part = parseInt(req.query.part || "1", 10);
+    const chunks = splitMessage(result);
+    const output = chunks[part - 1] || "더 이상 내용이 없습니다";
+    
+    res.type("text/plain").send(output);
   } catch (err) {
     console.error(err);
     res.status(500).send(`에러 발생: ${err.message}`);
