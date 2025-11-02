@@ -213,6 +213,13 @@ app.get("/nightbot", async (req, res) => {
       return a.end - b.end; // 시작시간 같으면 종료시간으로
     });
 
+    // 번호 & 라인 포맷 적용 후 분할
+    const formatted = results.map((r, i) => {
+      return `💥No${i + 1}${r.text.trim().replace(/\n/g, "\n | ")}`;
+    });
+    
+    const chunks = splitByEvents(formatted, 3);
+    
     // =====================
     // 나이트봇용 한 줄 + 구분자 출력
     // =====================
@@ -234,12 +241,6 @@ app.get("/nightbot", async (req, res) => {
 
     // 일정 3개씩 묶기
     //const chunks = splitByEvents(results, 3);
-    // 번호 & 라인 포맷 적용 후 분할
-    const formatted = results.map((r, i) => {
-      return `💥No${i + 1}${r.text.trim().replace(/\n/g, "\n | ")}`;
-    });
-    
-    const chunks = splitByEvents(formatted, 3);
 
     if (!chunks.length) {
       return res.type("text/plain").send(`${dateStr}\n \n해당 날짜에 일정이 없습니다.`);
