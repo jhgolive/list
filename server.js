@@ -56,7 +56,10 @@ function getKSTDate(date = new Date()) {
 }
 function formatKoreanDate(date = new Date()) {
   const kst = getKSTDate(date);
-  return `${kst.getFullYear()}년 ${kst.getMonth() + 1}월 ${kst.getDate()}일 (${WEEKDAYS[kst.getDay()]})`;
+  const day = String(kst.getDate()).padStart(2, "0"); // 3 → 03
+  const month = String(kst.getMonth() + 1).padStart(2, "0"); // 11 → 11 (두 자리)
+  return `${kst.getFullYear()}년 ${month}월 ${day}일 (${WEEKDAYS[kst.getDay()]})`;
+  //return `${kst.getFullYear()}년 ${kst.getMonth() + 1}월 ${kst.getDate()}일 (${WEEKDAYS[kst.getDay()]})`;
 }
 function formatYYYYMMDD(date = new Date()) {
   const kst = getKSTDate(date);
