@@ -245,7 +245,7 @@ app.get("/nightbot", async (req, res) => {
     
     const body = chunks[part - 1] || "더 이상 내용이 없습니다";
     
-    const finalOutput = `${header}\n \n${body}\n \n${footer}`;
+    const finalOutput = `${header}\n\n💥No${i + 1}${body}\n\n${footer}`;
     
     res.type("text/plain").send(finalOutput);
   } catch (err) {
