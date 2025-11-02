@@ -99,15 +99,15 @@ function formatKSTTime() {
 }
 
 // =====================
-// 텍스트 분할
+// 텍스트 분할  3개 일정씩
 // =====================
-function splitMessage(text, limit = 350) { 
-  const parts = [];
-  while (text.length > 0) {
-    parts.push(text.slice(0, limit));
-    text = text.slice(limit);
+function splitByEvents(events, perChunk = 3) {
+  const chunks = [];
+  for (let i = 0; i < events.length; i += perChunk) {
+    const slice = events.slice(i, i + perChunk);
+    chunks.push(slice.map(r => r.text).join("\n\n"));
   }
-  return parts;
+  return chunks;
 }
 
 // =====================
@@ -227,10 +227,27 @@ app.get("/nightbot", async (req, res) => {
 
     //res.type("text/plain").send(result);
     const part = parseInt(req.query.part || "1", 10);
-    const chunks = splitMessage(result);
-    const chunk = chunks[part - 1] || "더 이상 내용이 없습니다";
+    //const chunks = splitMessage(result);
+    //const chunk = chunks[part - 1] || "더 이상 내용이 없습니다";
     
-    res.type("text/plain").send(chunk);
+    //res.type("text/plain").send(chunk);
+
+    // 일정 3개씩 묶기
+    const chunks = splitByEvents(results, 3);
+    
+    if (!chunks.length) {
+      return res.type("text/plain").send(`${dateStr}\n \n해당 날짜에 일정이 없습니다.`);
+    }
+    
+    // 헤더 + 청크 + 푸터
+    const header = `🌟 ${dateStr}`;
+    const footer = `💫 ${updatedTime} 업데이트`;
+    
+    const body = chunks[part - 1] || "더 이상 내용이 없습니다";
+    
+    const finalOutput = `${header}\n \n${body}\n \n${footer}`;
+    
+    res.type("text/plain").send(finalOutput);
   } catch (err) {
     console.error(err);
     res.status(500).send(`에러 발생: ${err.message}`);
