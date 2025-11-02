@@ -1,4 +1,4 @@
-// puppeteer 숨겨서 차단 안되게
+// puppeteer 숨겨서 차단 안되게, 나이트봇 페이지 분할 응답, part값 없으면 전체 일정 반환
 import express from "express";
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
