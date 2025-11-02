@@ -252,7 +252,20 @@ app.get("/nightbot", async (req, res) => {
     
     const body = chunks[part - 1] || "더 이상 내용이 없습니다";
     
-    const finalOutput = `${header}\n\n${body}\n\n${footer}`;
+    let finalOutput = "";
+
+    // 첫 페이지면 헤더 붙이기
+    if (part === 1) {
+      finalOutput += `🌟 ${dateStr}\n\n`;
+    }
+    
+    // 본문 붙이기
+    finalOutput += body;
+    
+    // 마지막 페이지면 푸터 붙이기
+    if (part === chunks.length) {
+      finalOutput += `\n\n💫 ${updatedTime} 업데이트`;
+    }
     
     res.type("text/plain").send(finalOutput);
   } catch (err) {
