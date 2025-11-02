@@ -4,7 +4,6 @@ import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 puppeteer.use(StealthPlugin());
 
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -171,9 +170,12 @@ app.get("/nightbot", async (req, res) => {
 
             if (event && event.title) {
               const kstTime = convertTimeRangeToKST(event.time);
+              const [startStr, endStr] = kstTime?.split("~").map(t => t.trim()) || [];
               return {
                 text: `: ${event.title}\n주관: ${event.organizer || "-"}\n장소: ${event.place || "-"}\n시간: ${kstTime || "-"}\n`,
-                time: kstTime ? timeToNumber(kstTime.split("~")[0].trim()) : 0,
+                //time: kstTime ? timeToNumber(kstTime.split("~")[0].trim()) : 0,
+                start: startStr ? timeToNumber(startStr) : 0,
+                end: endStr ? timeToNumber(endStr) : 9999, // 종료시간 없으면 뒤로 보내기
               };
             }
             return null;
@@ -193,14 +195,11 @@ app.get("/nightbot", async (req, res) => {
       return;
     }
 
-    results.sort((a, b) => a.time - b.time);
-    //results.sort((a, b) => {
-      //const [aStart, aEnd] = (a.time || "").split("~").map(t => timeToNumber(t.trim()));
-      //const [bStart, bEnd] = (b.time || "").split("~").map(t => timeToNumber(t.trim()));
-    
-      //if (aStart !== bStart) return aStart - bStart; // 시작시간 기준
-      //return (aEnd || 0) - (bEnd || 0); // 종료시간 기준
-    //});
+    //results.sort((a, b) => a.time - b.time);
+    results.sort((a, b) => {
+      if (a.start !== b.start) return a.start - b.start; // 시작시간 우선
+      return a.end - b.end; // 시작시간 같으면 종료시간으로
+    });
 
     // =====================
     // 나이트봇용 한 줄 + 구분자 출력
@@ -209,7 +208,7 @@ app.get("/nightbot", async (req, res) => {
     //const output = `${dateStr}\n\n${results.map(r => `📌 ${r.text.replace(/\n/g, " | ")}`).join(" — ")}`; // 이벤트 간 구분
     //const output = `${dateStr}\n\n${results.map(r => `📌 ${r.text.replace(/\n/g, "\n | ")}`).join("\n — ")}`; // 이벤트 간 구분
     //const output = `📌 ${dateStr}\n${results.map(r => `💥 ${r.text.trim().replace(/\n/g, "\n | ")}`).join("\n  \n")}`;
-    const output = `🌟 ${dateStr}\n\n${results.map((r, i) => `💥No${i + 1}${r.text.trim().replace(/\n/g, "\n | ")}`).join("\n  \n")}\n\n💫 ${updatedTime} 업데이트`; // 앞에 넘버
+    const output = `🌟 ${dateStr}\n \n${results.map((r, i) => `💥No${i + 1}${r.text.trim().replace(/\n/g, "\n | ")}`).join("\n \n")}\n \n💫 ${updatedTime} 업데이트`; // 앞에 넘버
         
     //const output = `${dateStr}\n\n${results.map(r => r.text).join("\n")}`; 
     const result = output.length > 3000 ? output.slice(0, 3000) + "…(생략)" : output;
