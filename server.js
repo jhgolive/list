@@ -1,4 +1,4 @@
-// puppeteer 숨겨서 안걸리게
+// puppeteer 숨겨서 차단 안되게
 import express from "express";
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
