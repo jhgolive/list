@@ -200,38 +200,12 @@ refreshCache(); // 서버 시작 시 즉시 실행
 // /nightbot
 // =====================
 app.get("/nightbot", async (req, res) => {
-  let raw = decodeURI(req.query.date || "").trim();
+  let input = req.query.date || "";
+  let part = req.query.part ? parseInt(req.query.part, 10) : null;
 
-  // 명령어 파싱: "1109 2", "1109 part2", "1109 파트2", "part2", "파트2" 등 처리
-  let datePart = null;
-  let part = null;
-
-  // "1109" 또는 "1109 something" 분리
-  const tokens = raw.split(/\s+/).filter(Boolean);
-
-  // 날짜 후보
-  const dateToken = tokens.find(t => /^\d{3,4}$/.test(t)); // 1109, 110 등
-  if (dateToken) datePart = dateToken.padStart(4, "0");
-
-  // 파트 후보
-  const partToken = tokens.find(t => /(part|파트)?\s*\d+/i.test(t));
-  if (partToken) {
-    const numMatch = partToken.match(/(\d+)/);
-    if (numMatch) part = parseInt(numMatch[1], 10);
-  }
-
-  // Nightbot이 기본적으로 ?date=XXX 형태로 전달하므로, 별도 date=값도 반영
-  if (!datePart && /^\d{3,4}$/.test(raw)) datePart = raw.padStart(4, "0");
-  if (!part && /part|파트/i.test(raw)) {
-    const num = raw.match(/(\d+)/);
-    if (num) part = parseInt(num[1], 10);
-  }
-
-  // 기본값: 오늘 날짜
   let { pretty: dateStr, iso: urlDateStr } =
-    datePart ? parseMMDD(datePart) : { pretty: formatKoreanDate(), iso: formatYYYYMMDD() };
+    /^\d{4}$/.test(input) ? parseMMDD(input) : { pretty: formatKoreanDate(), iso: formatYYYYMMDD() };
 
-  // 캐시에서 조회
   const cached = cache.get(urlDateStr);
   if (cached) {
     if (part) {
@@ -247,7 +221,7 @@ app.get("/nightbot", async (req, res) => {
     }
   }
 
-  // 캐시에 없으면 새로 크롤링
+  // 캐시에 없을 경우 즉시 새로 크롤링
   await fetchEventsForDate(urlDateStr, dateStr);
   const newData = cache.get(urlDateStr);
   res.type("text/plain").send(newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`);
