@@ -219,7 +219,18 @@ app.get("/nightbot", async (req, res) => {
       let text = "";
       if (part === 1) text += `🌟 ${dateStr}\n\n`;
       text += chunk;
-      if (part === cached.chunks.length) text += `\n\n💫 ${formatKSTTime()} 업데이트`;
+      //if (part === cached.chunks.length) text += `\n\n💫 ${formatKSTTime()} 업데이트`; // 호출한 현재 업데이트 시간
+      // 캐시에 저장된 업데이트 시간
+      if (part === cached.chunks.length) {
+        const updated = new Date(cached.updated); // 캐시 생성 시점
+        const kst = getKSTDate(updated);          // KST로 변환
+        const y = kst.getFullYear();
+        const m = String(kst.getMonth() + 1).padStart(2, "0");
+        const d = String(kst.getDate()).padStart(2, "0");
+        const hh = String(kst.getHours()).padStart(2, "0");
+        const mm = String(kst.getMinutes()).padStart(2, "0");
+        text += `\n\n💫 ${y}-${m}-${d} ${hh}:${mm} 업데이트`;
+    }
       return res.type("text/plain").send(text);
     } else {
       return res.type("text/plain").send(cached.full);
