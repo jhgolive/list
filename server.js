@@ -172,6 +172,12 @@ async function fetchEventsForDate(dateIso, datePretty) {
 // 백그라운드 갱신 (1시간마다)
 // =====================
 async function refreshCache() {
+  // 일주일치 캐시 갱신 시작 직후에 추가
+  for (const key of cache.keys()) {
+    const now = formatYYYYMMDD(getKSTDate());
+    const diff = new Date(key) - new Date(now);
+    if (diff < 0) cache.delete(key); // 오늘 이전 날짜 캐시 제거
+  }
   console.log("♻️ 일주일치 일정 캐시 갱신 시작");
   const today = getKSTDate();
   for (let i = 0; i < 7; i++) {
