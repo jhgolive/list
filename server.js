@@ -200,9 +200,29 @@ refreshCache(); // 서버 시작 시 즉시 실행
 // /nightbot
 // =====================
 app.get("/nightbot", async (req, res) => {
-  let input = req.query.date || "";
-  let part = req.query.part ? parseInt(req.query.part, 10) : null;
+  let rawInput = req.query.date || "";
+  rawInput = decodeURI(rawInput.replace(/\+/g, " ")).trim();
 
+  // 기본값 part=1
+  let part = parseInt(req.query.part || "1");
+
+  // ✅ 1️⃣ "part2", "part 2", "파트2" 인식
+  let match = rawInput.match(/(?:part|파트)\s*([0-9]+)/i);
+  if (match) {
+    part = parseInt(match[1]);
+    rawInput = rawInput.replace(match[0], "").trim();
+  } 
+  // ✅ 2️⃣ 제목 끝에 붙은 "2", "3" 같은 숫자 인식 (예: "1109 2")
+  else {
+    const numMatch = rawInput.match(/\b([0-9]+)\b$/);
+    if (numMatch) {
+      part = parseInt(numMatch[1]);
+      rawInput = rawInput.replace(numMatch[0], "").trim();
+    }
+  }
+
+  // ✅ MMDD 형식만 남기기 (예: “1109”)
+  let input = rawInput.replace(/\s+/g, "");
   let { pretty: dateStr, iso: urlDateStr } =
     /^\d{4}$/.test(input) ? parseMMDD(input) : { pretty: formatKoreanDate(), iso: formatYYYYMMDD() };
 
@@ -221,7 +241,7 @@ app.get("/nightbot", async (req, res) => {
     }
   }
 
-  // 캐시에 없을 경우 즉시 새로 크롤링
+  // 캐시에 없으면 새로 크롤링
   await fetchEventsForDate(urlDateStr, dateStr);
   const newData = cache.get(urlDateStr);
   res.type("text/plain").send(newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`);
