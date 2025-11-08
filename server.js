@@ -46,7 +46,12 @@ function parseMMDD(mmdd) {
   const year = today.getFullYear();
   const month = parseInt(mmdd.slice(0, 2), 10);
   const day = parseInt(mmdd.slice(2, 4), 10);
-  return { pretty: formatKoreanDate(new Date(year, month - 1, day)), iso: `${year}-${month}-${day}` };
+  const monthStr = String(month).padStart(2, "0");
+  const dayStr = String(day).padStart(2, "0");
+  return {
+    pretty: formatKoreanDate(new Date(year, month - 1, day)),
+    iso: `${year}-${monthStr}-${dayStr}`,
+  };
 }
 function formatKSTTime() {
   const kst = getKSTDate();
