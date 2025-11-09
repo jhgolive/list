@@ -83,7 +83,7 @@ function timeToNumber(timeStr) {
   const [h, m] = timeStr.split(":").map(Number);
   return h * 60 + m;
 }
-// 한 part에 3일정씩 자름
+// part당 3개 일정씩 자름
 function splitByEvents(texts, perChunk = 3) {
   const chunks = [];
   for (let i = 0; i < texts.length; i += perChunk) {
@@ -167,7 +167,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
   const chunks = splitByEvents(formatted, 3);
 
   const header = `🌟 ${datePretty}`;
-  const footer = `💫 ${updatedTime} 업데이트  by 쩡햄Live`;
+  const footer = `💫 ${updatedTime} 업데이트 by 쩡햄Live`;
   const fullText = `${header}\n\n${chunks.join("\n\n")}\n\n${footer}`;
 
   cache.set(dateIso, { updated: Date.now(), full: fullText, chunks });
