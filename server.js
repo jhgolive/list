@@ -167,7 +167,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
   const chunks = splitByEvents(formatted, 3);
 
   const header = `🌟 ${datePretty}`;
-  const footer = `💫 ${updatedTime} 업데이트 @쩡햄Live`;
+  const footer = `💫 ${updatedTime} 업데이트  @쩡햄Live`;
   const fullText = `${header}\n\n${chunks.join("\n\n")}\n\n${footer}`;
 
   cache.set(dateIso, { updated: Date.now(), full: fullText, chunks });
