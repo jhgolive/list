@@ -206,25 +206,29 @@ refreshCache(); // 서버 시작 시 즉시 실행
 // /nightbot
 // =====================
 app.get("/nightbot", async (req, res) => {
-  // 나이트봇은 모든 입력을 ?q= 또는 ?query= 로 넘길 때도 있으므로
   let input =
     req.query.q || req.query.query || req.query.text || req.query.date || "";
   input = decodeURIComponent(input).trim();
 
   // ✅ 날짜 (MMDD)
-  // - 숫자 4자리 (예: 1109)
-  // - 없으면 오늘 날짜 사용
   const dateMatch = input.match(/(\d{4})/);
-  const { pretty: dateStr, iso: urlDateStr } = dateMatch
+  const dateInfo = dateMatch
     ? parseMMDD(dateMatch[1])
     : { pretty: formatKoreanDate(), iso: formatYYYYMMDD() };
 
-  // ✅ part (파트, part, 숫자)
-  // - "파트2", "part 2", " 2" 등 모두 허용
-  const partMatch = input.match(/(?:파트|part)?\s*0*(\d+)\s*$/i);
-  const part = partMatch ? parseInt(partMatch[1], 10) : null;
+  const { pretty: dateStr, iso: urlDateStr } = dateInfo;
 
-  console.log(`🎯 요청: input="${input}", 날짜=${urlDateStr}, part=${part}`);
+  // ✅ part (파트, part, 또는 숫자) — 단, 날짜 숫자와 동일하면 무시
+  let part = null;
+  const partMatch = input.match(/(?:파트|part)?\s*0*(\d+)\s*$/i);
+  if (partMatch) {
+    const maybePart = parseInt(partMatch[1], 10);
+    if (!dateMatch || partMatch[1] !== dateMatch[1]) {
+      part = maybePart;
+    }
+  }
+
+  console.log(`🎯 요청: "${input}" → 날짜=${urlDateStr}, part=${part}`);
 
   const cached = cache.get(urlDateStr);
 
@@ -253,12 +257,11 @@ app.get("/nightbot", async (req, res) => {
 
       return res.type("text/plain").send(text);
     } else {
-      // part 미지정 → 전체 출력
       return res.type("text/plain").send(cached.full);
     }
   }
 
-  // 캐시에 없으면 새로 크롤링
+  // 캐시에 없을 경우 즉시 새로 크롤링
   await fetchEventsForDate(urlDateStr, dateStr);
   const newData = cache.get(urlDateStr);
   res
