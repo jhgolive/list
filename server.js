@@ -206,13 +206,20 @@ refreshCache(); // 서버 시작 시 즉시 실행
 // /nightbot
 // =====================
 app.get("/nightbot", async (req, res) => {
-  let input = req.query.date || "";
-  let part = req.query.part ? parseInt(req.query.part, 10) : null;
+  let input = req.query.date || ""; // 나이트봇에서 넘어오는 전체 텍스트
 
-  let { pretty: dateStr, iso: urlDateStr } =
-    /^\d{4}$/.test(input) ? parseMMDD(input) : { pretty: formatKoreanDate(), iso: formatYYYYMMDD() };
+  // 날짜(MMDD)와 part 번호 추출
+  const dateMatch = input.match(/(\d{4})/); // 4자리 숫자 = MMDD
+  const partMatch = input.match(/파트\s*0*(\d+)/i); // "파트 2", "파트02", 공백 유무 상관없음
+
+  const part = partMatch ? parseInt(partMatch[1], 10) : null;
+
+  const { pretty: dateStr, iso: urlDateStr } = dateMatch
+    ? parseMMDD(dateMatch[1])
+    : { pretty: formatKoreanDate(), iso: formatYYYYMMDD() };
 
   const cached = cache.get(urlDateStr);
+
   if (cached) {
     if (part) {
       const chunk = cached.chunks[part - 1];
@@ -220,25 +227,25 @@ app.get("/nightbot", async (req, res) => {
       let text = "";
       if (part === 1) text += `🌟 ${dateStr}\n\n`;
       text += chunk;
-      //if (part === cached.chunks.length) text += `\n\n💫 ${formatKSTTime()} 업데이트`; // 호출한 현재 업데이트 시간
-      // 캐시에 저장된 업데이트 시간
+
       if (part === cached.chunks.length) {
-        const updated = new Date(cached.updated); // 캐시 생성 시점
-        const kst = getKSTDate(updated);          // KST로 변환
+        const updated = new Date(cached.updated);
+        const kst = getKSTDate(updated);
         const y = kst.getFullYear();
         const m = String(kst.getMonth() + 1).padStart(2, "0");
         const d = String(kst.getDate()).padStart(2, "0");
         const hh = String(kst.getHours()).padStart(2, "0");
         const mm = String(kst.getMinutes()).padStart(2, "0");
         text += `\n\n💫 ${y}-${m}-${d} ${hh}:${mm} 업데이트`;
-    }
+      }
+
       return res.type("text/plain").send(text);
     } else {
       return res.type("text/plain").send(cached.full);
     }
   }
 
-  // 캐시에 없을 경우 즉시 새로 크롤링
+  // 캐시에 없으면 즉시 새로 크롤링
   await fetchEventsForDate(urlDateStr, dateStr);
   const newData = cache.get(urlDateStr);
   res.type("text/plain").send(newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`);
