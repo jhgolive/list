@@ -183,12 +183,14 @@ async function refreshCache() {
   const newCache = new Map();
 
   const today = getKSTDate();
+  today.setHours(0, 0, 0, 0); // 🔹 한국시간 기준 자정으로 고정
   for (let i = 0; i < 7; i++) {
-    const date = new Date(today.getTime() + i * 86400000);
+    const date = new Date(today);
+    date.setDate(today.getDate() + i); // 🔹 날짜 단위로 더하기 (로컬 기준)
     const iso = formatYYYYMMDD(date);
     const pretty = formatKoreanDate(date);
     await fetchEventsForDate(iso, pretty);
-    newCache.set(iso, cache.get(iso)); // 새 데이터 복사
+    newCache.set(iso, cache.get(iso));
   }
 
   // 새 캐시 완성 후 교체
