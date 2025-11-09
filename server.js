@@ -179,14 +179,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
 async function refreshCache() {
   console.log("♻️ 일주일치 일정 캐시 갱신 시작");
 
-  // 지난 날짜 캐시 자동삭제
-  const nowIso = formatYYYYMMDD(getKSTDate());
-  for (const key of [...cache.keys()]) {
-    if (new Date(key) < new Date(nowIso)) {
-      cache.delete(key);
-      console.log(`🧹 ${key} 캐시 삭제됨 (지난 날짜)`);
-    }
-  }
+  const oldKeys = [...cache.keys()];
+  const newCache = new Map();
 
   const today = getKSTDate();
   for (let i = 0; i < 7; i++) {
@@ -194,8 +188,12 @@ async function refreshCache() {
     const iso = formatYYYYMMDD(date);
     const pretty = formatKoreanDate(date);
     await fetchEventsForDate(iso, pretty);
+    newCache.set(iso, cache.get(iso)); // 새 데이터 복사
   }
 
+  // 새 캐시 완성 후 교체
+  cache.clear();
+  for (const [k, v] of newCache.entries()) cache.set(k, v);
   console.log("✅ 일주일치 캐시 갱신 완료");
 }
 setInterval(refreshCache, 60 * 60 * 1000); // 1시간마다
