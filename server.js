@@ -206,14 +206,23 @@ refreshCache(); // 서버 시작 시 즉시 실행
 // /nightbot
 // =====================
 app.get("/nightbot", async (req, res) => {
-  let input = req.query.date || ""; // 나이트봇에서 넘어오는 전체 텍스트
+  let input = (req.query.date || "").trim();
 
-  // 날짜(MMDD)와 part 번호 추출
-  const dateMatch = input.match(/(\d{4})/); // 4자리 숫자 = MMDD
-  const partMatch = input.match(/파트\s*0*(\d+)/i); // "파트 2", "파트02", 공백 유무 상관없음
+  // 날짜(MMDD) 추출
+  const dateMatch = input.match(/(\d{4})/); // 4자리 숫자 (예: 1109)
+
+  // 파트 번호 추출
+  const partMatch = input.match(
+    /(?:파트|part)?\s*0*(\d+)\s*$/i
+  );
+  // 설명:
+  // (?:파트|part)? → "파트" 또는 "part"는 있어도 되고 없어도 됨
+  // \s*0*(\d+) → 앞의 공백/0 무시하고 숫자 추출
+  // \s*$ → 끝에 붙은 공백 무시
 
   const part = partMatch ? parseInt(partMatch[1], 10) : null;
 
+  // 날짜 포맷 결정
   const { pretty: dateStr, iso: urlDateStr } = dateMatch
     ? parseMMDD(dateMatch[1])
     : { pretty: formatKoreanDate(), iso: formatYYYYMMDD() };
@@ -222,12 +231,15 @@ app.get("/nightbot", async (req, res) => {
 
   if (cached) {
     if (part) {
+      // part가 지정된 경우
       const chunk = cached.chunks[part - 1];
-      if (!chunk) return res.status(204).send();
+      if (!chunk) return res.status(204).send(`해당 파트(${part})가 없습니다.`);
+
       let text = "";
       if (part === 1) text += `🌟 ${dateStr}\n\n`;
       text += chunk;
 
+      // 마지막 파트에 업데이트 표시
       if (part === cached.chunks.length) {
         const updated = new Date(cached.updated);
         const kst = getKSTDate(updated);
@@ -241,11 +253,12 @@ app.get("/nightbot", async (req, res) => {
 
       return res.type("text/plain").send(text);
     } else {
+      // part 미지정 → 전체 출력
       return res.type("text/plain").send(cached.full);
     }
   }
 
-  // 캐시에 없으면 즉시 새로 크롤링
+  // 캐시에 없으면 새로 크롤링
   await fetchEventsForDate(urlDateStr, dateStr);
   const newData = cache.get(urlDateStr);
   res.type("text/plain").send(newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`);
