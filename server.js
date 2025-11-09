@@ -1,4 +1,4 @@
-// puppeteer 숨겨서 차단 안되게 + 7일치 캐시 + 지난 날짜 자동삭제 + part 분할 + 1시간마다 자동 갱신
+// puppeteer 숨겨서 차단 안되게 + 7일치 캐시 + 지난 날짜 자동삭제 + part 분할 + 1시간마다 자동 갱신 + 쿼리에 파트 명령어 적용
 import express from "express";
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
