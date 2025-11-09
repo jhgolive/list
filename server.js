@@ -235,10 +235,10 @@ app.get("/nightbot", async (req, res) => {
   if (cached) {
     if (part) {
       const chunk = cached.chunks[part - 1];
-      if (!chunk)
-        return res
-          .type("text/plain")
-          .send(`⚠️ ${dateStr}\n\n요청한 파트(${part})는 없습니다.`);
+      if (!chunk) {
+            // ⚠️ 문구 대신 조용히 빈 응답
+            return res.type("text/plain").send("");
+      }
 
       let text = "";
       if (part === 1) text += `🌟 ${dateStr}\n\n`;
