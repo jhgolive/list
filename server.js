@@ -83,8 +83,8 @@ function timeToNumber(timeStr) {
   const [h, m] = timeStr.split(":").map(Number);
   return h * 60 + m;
 }
-// part당 3개 일정씩 자름
-function splitByEvents(texts, perChunk = 3) {
+// part당 2개 일정씩 자름
+function splitByEvents(texts, perChunk = 2) {
   const chunks = [];
   for (let i = 0; i < texts.length; i += perChunk) {
     chunks.push(texts.slice(i, i + perChunk).join("\n\n"));
