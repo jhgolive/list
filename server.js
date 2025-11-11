@@ -205,39 +205,35 @@ refreshCache(); // 서버 시작 시 즉시 실행
 // /nightbot
 // =====================
 app.get("/nightbot", async (req, res) => {
-  let input =
-    req.query.q || req.query.query || req.query.text || req.query.date || "";
-  input = decodeURIComponent(input).trim();
+  let dateInput = req.query.q || req.query.query || req.query.text || req.query.date || "";
+  dateInput = decodeURIComponent(dateInput).trim();
 
-  // ✅ 날짜 (MMDD)
-  const dateMatch = input.match(/(\d{4})/);
+  // ✅ 날짜 추출
+  const dateMatch = dateInput.match(/(\d{4})/);
   const dateInfo = dateMatch
     ? parseMMDD(dateMatch[1])
     : { pretty: formatKoreanDate(), iso: formatYYYYMMDD() };
-
   const { pretty: dateStr, iso: urlDateStr } = dateInfo;
 
-  // ✅ part (파트, part, 또는 숫자) — 단, 날짜 숫자와 동일하면 무시
+  // ✅ part는 별도 파라미터 또는 문구 내에서 추출
   let part = null;
-  const partMatch = input.match(/(?:파트|part)?\s*0*(\d+)\s*$/i);
-  if (partMatch) {
-    const maybePart = parseInt(partMatch[1], 10);
-    if (!dateMatch || partMatch[1] !== dateMatch[1]) {
-      part = maybePart;
+  if (req.query.part) {
+    part = parseInt(req.query.part, 10);
+  } else {
+    const partMatch = dateInput.match(/(?:파트|part)?\s*0*(\d+)\s*$/i);
+    if (partMatch && (!dateMatch || partMatch[1] !== dateMatch[1])) {
+      part = parseInt(partMatch[1], 10);
     }
   }
 
-  console.log(`🎯 요청: "${input}" → 날짜=${urlDateStr}, part=${part}`);
+  console.log(`🎯 요청: "${dateInput}" → 날짜=${urlDateStr}, part=${part}`);
 
   const cached = cache.get(urlDateStr);
 
   if (cached) {
     if (part) {
       const chunk = cached.chunks[part - 1];
-      if (!chunk) {
-            // ⚠️ 문구 대신 조용히 빈 응답
-            return res.type("text/plain").send("");
-      }
+      if (!chunk) return res.type("text/plain").send("");
 
       let text = "";
       if (part === 1) text += `🌟 ${dateStr}\n\n`;
@@ -260,12 +256,10 @@ app.get("/nightbot", async (req, res) => {
     }
   }
 
-  // 캐시에 없을 경우 즉시 새로 크롤링
+  // 캐시에 없으면 즉시 새로 크롤링
   await fetchEventsForDate(urlDateStr, dateStr);
   const newData = cache.get(urlDateStr);
-  res
-    .type("text/plain")
-    .send(newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`);
+  res.type("text/plain").send(newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`);
 });
 
 // =====================
