@@ -82,9 +82,8 @@ function timeToNumber(timeStr) {
   if (!timeStr) return 0;
   const [h, m] = timeStr.split(":").map(Number);
   return h * 60 + m;
-}
-// part당 1개 일정씩 자름 
-function splitByEvents(texts, perChunk = 1) {
+} 
+function splitByEvents(texts, perChunk = 3) {
   const chunks = [];
   for (let i = 0; i < texts.length; i += perChunk) {
     chunks.push(texts.slice(i, i + perChunk).join("\n\n"));
@@ -164,7 +163,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
   const updatedTime = formatKSTTime();
 
   const formatted = results.map((r, i) => `💥No${i + 1}${r.text.replace(/\n/g, "\n | ")}`);
-  const chunks = splitByEvents(formatted, 3);
+  const chunks = splitByEvents(formatted, 1); // part당 1개 일정씩 출력
 
   const header = `🌟 ${datePretty}`;
   const footer = `💫 ${updatedTime} 업데이트 @쩡햄Live`;
