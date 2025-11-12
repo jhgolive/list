@@ -1,4 +1,4 @@
-// puppeteer 숨겨서 차단 안되게 + 7일치 캐시 + 지난 날짜 자동삭제 + part 분할 + 1시간마다 자동 갱신 + 쿼리에 파트 명령어 적용 
+// puppeteer 숨겨서 차단 안되게 + 7일치 캐시 + 지난 날짜 자동삭제 + part 분할 + 1시간마다 자동 갱신 + 쿼리에 파트 명령어 적용 + 총 list수
 import express from "express";
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
@@ -165,7 +165,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
   const formatted = results.map((r, i) => `💥No${i + 1}${r.text.replace(/\n/g, "\n | ")}`);
   const chunks = splitByEvents(formatted, 1); // part당 1개 일정씩 출력
 
-  const header = `🌟 ${datePretty}`;
+  const header = `🌟 ${datePretty} ${results.length} lists`;
   const footer = `💫 ${updatedTime} 업데이트 @쩡햄Live`;
   const fullText = `${header}\n\n${chunks.join("\n\n")}\n\n${footer}`;
 
