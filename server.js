@@ -236,7 +236,7 @@ app.get("/nightbot", async (req, res) => {
       if (!chunk) return res.type("text/plain").send("");
 
       let text = "";
-      if (part === 1) text += `🌟 ${dateStr}\n\n`;
+      if (part === 1) text += `🌟 ${dateStr} ${results.length} lists\n\n`;
       text += chunk;
 
       if (part === cached.chunks.length) {
