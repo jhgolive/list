@@ -169,7 +169,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
   const footer = `💫 ${updatedTime} 업데이트 @쩡햄Live`;
   const fullText = `${header}\n\n${chunks.join("\n\n")}\n\n${footer}`;
 
-  cache.set(dateIso, { updated: Date.now(), full: fullText, chunks });
+  cache.set(dateIso, { updated: Date.now(), full: fullText, chunks, count: results.length });
   console.log(`✅ ${dateIso} 일정 캐시 완료 (${results.length}건)`);
 }
 
@@ -236,7 +236,7 @@ app.get("/nightbot", async (req, res) => {
       if (!chunk) return res.type("text/plain").send("");
 
       let text = "";
-      if (part === 1) text += `🌟 ${dateStr} ${results.length} lists\n\n`;
+      if (part === 1) text += `🌟 ${dateStr} ${cached.count || cached.chunks.length} lists\n\n`;
       text += chunk;
 
       if (part === cached.chunks.length) {
