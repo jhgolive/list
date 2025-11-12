@@ -1,4 +1,4 @@
-// puppeteer 숨겨서 차단 안되게 + 7일치 캐시 + 지난 날짜 자동삭제 + part 분할 + 1시간마다 자동 갱신 + 쿼리에 파트 명령어 적용 + 총 list수
+// puppeteer 숨겨서 차단 안되게 + 7일치 캐시 + 지난 날짜 자동삭제 + part 분할 + 1시간마다 자동 갱신 + 쿼리에 파트 명령어 적용 + 총 건수
 import express from "express";
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
@@ -165,7 +165,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
   const formatted = results.map((r, i) => `💥No${i + 1}${r.text.replace(/\n/g, "\n | ")}`);
   const chunks = splitByEvents(formatted, 1); // part당 1개 일정씩 출력
 
-  const header = `🌟 ${datePretty} ${results.length} 집회`;
+  const header = `🌟 ${datePretty}  ${results.length}건`;
   const footer = `💫 ${updatedTime} 업데이트 @쩡햄Live`;
   const fullText = `${header}\n\n${chunks.join("\n\n")}\n\n${footer}`;
 
@@ -236,7 +236,7 @@ app.get("/nightbot", async (req, res) => {
       if (!chunk) return res.type("text/plain").send("");
 
       let text = "";
-      if (part === 1) text += `🌟 ${dateStr} ${cached.count || cached.chunks.length} 집회\n\n`;
+      if (part === 1) text += `🌟 ${dateStr}  ${cached.count || cached.chunks.length}건\n\n`;
       text += chunk;
 
       if (part === cached.chunks.length) {
