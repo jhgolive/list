@@ -149,7 +149,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
         const kstTime = convertTimeRangeToKST(event.time);
         const [startStr, endStr] = kstTime?.split("~").map(t => t.trim()) || [];
         results.push({
-          text: `: ${event.title}\n주관: ${event.organizer || "-"}\n장소: ${event.place || "-"}\n시간: ${kstTime || "-"}`,
+          text: ` : ${event.title}\n주관: ${event.organizer || "-"}\n장소: ${event.place || "-"}\n시간: ${kstTime || "-"}`,
           start: startStr ? timeToNumber(startStr) : 0,
           end: endStr ? timeToNumber(endStr) : 9999,
         });
@@ -162,7 +162,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
   results.sort((a, b) => (a.start - b.start) || (a.end - b.end));
   const updatedTime = formatKSTTime();
 
-  const formatted = results.map((r, i) => `💥${i + 1}${r.text.replace(/\n/g, "\n✨")}`);
+  const formatted = results.map((r, i) => `💥 ${i + 1}${r.text.replace(/\n/g, "\n✨")}`);
   const chunks = splitByEvents(formatted, 1); // part당 1개 일정씩 출력
 
   const header = `🌟 ${datePretty}  ${results.length}건`;
