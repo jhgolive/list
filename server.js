@@ -162,7 +162,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
   results.sort((a, b) => (a.start - b.start) || (a.end - b.end));
   const updatedTime = formatKSTTime();
 
-  const formatted = results.map((r, i) => `💥No${i + 1}${r.text.replace(/\n/g, "\n  ||")}`);
+  const formatted = results.map((r, i) => `💥No${i + 1}${r.text.replace(/\n/g, "\n  || ")}`);
   const chunks = splitByEvents(formatted, 1); // part당 1개 일정씩 출력
 
   const header = `✨ ${datePretty}  ${results.length}건`;
