@@ -14,22 +14,11 @@ let cachedData = null;
 let lastUpdated = null;
 
 const LAUNCH_OPTIONS = {
-  headless: true,
-  executablePath: "/usr/bin/google-chrome-stable", // Render에서 사용하는 크롬
+  headless: "new",
   args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
-    "--disable-gpu",
-    "--disable-dev-shm-usage",
-    "--disable-dev-tools",
-    "--disable-background-networking",
-    "--disable-background-timer-throttling",
-    "--disable-client-side-phishing-detection",
-    "--disable-sync",
-    "--metrics-recording-only",
-    "--no-first-run",
-    "--no-zygote",
-    "--single-process"
+    "--disable-dev-shm-usage"
   ]
 };
 
@@ -82,9 +71,7 @@ async function refreshCache() {
   }
 }
 
-// 초기 캐시 로딩
 refreshCache();
-// 5분마다 업데이트
 setInterval(refreshCache, 5 * 60 * 1000);
 
 app.get("/", (req, res) => {
