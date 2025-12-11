@@ -1,124 +1,99 @@
-// render-optimized server.js
 import express from "express";
 import cors from "cors";
 import responseTime from "response-time";
-import "dotenv/config";
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 
 puppeteer.use(StealthPlugin());
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-let browser = null;
-let engCache = "";
-let krCache = "";
-let isRefreshing = false;
+app.use(cors());
+app.use(responseTime());
+
+let cachedData = null;
+let lastUpdated = null;
+
+const LAUNCH_OPTIONS = {
+  headless: true,
+  executablePath: "/usr/bin/google-chrome-stable", // Render에서 사용하는 크롬
+  args: [
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-gpu",
+    "--disable-dev-shm-usage",
+    "--disable-dev-tools",
+    "--disable-background-networking",
+    "--disable-background-timer-throttling",
+    "--disable-client-side-phishing-detection",
+    "--disable-sync",
+    "--metrics-recording-only",
+    "--no-first-run",
+    "--no-zygote",
+    "--single-process"
+  ]
+};
 
 async function getBrowser() {
-  try {
-    if (!browser || !browser.isConnected()) {
-      console.log("Launching Chromium...");
-      browser = await puppeteer.launch({
-        headless: true,
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-        args: [
-          "--no-sandbox",
-          "--disable-setuid-sandbox",
-          "--disable-dev-shm-usage",
-          "--disable-gpu",
-          "--disable-software-rasterizer",
-          "--no-zygote",
-        ],
-      });
-    }
-    return browser;
-  } catch (error) {
-    console.error("Browser launch failed:", error);
-    throw error;
-  }
+  return await puppeteer.launch(LAUNCH_OPTIONS);
 }
 
-async function fetchDotaRankings(selector) {
+async function fetchDotaRankings() {
+  console.log("Launching browser...");
+  const browser = await getBrowser();
+  const page = await browser.newPage();
+
   try {
-    const browser = await getBrowser();
-    const page = await browser.newPage();
-
-    await page.setUserAgent(
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-    );
-
-    await page.goto("https://stratz.com/rankings", {
+    console.log("Scraping page...");
+    await page.goto("https://www.opendota.com/leaderboards", {
       waitUntil: "networkidle2",
-      timeout: 60000,
+      timeout: 60000
     });
 
-    await page.waitForSelector(selector, { timeout: 60000 });
-    const element = await page.$(selector);
-    if (!element) throw new Error(`Selector not found: ${selector}`);
+    const result = await page.evaluate(() => {
+      const rows = [...document.querySelectorAll("tbody tr")];
+      return rows.map(row => {
+        const tds = row.querySelectorAll("td");
+        return {
+          rank: tds[0]?.innerText.trim(),
+          player: tds[1]?.innerText.trim(),
+          mmr: tds[2]?.innerText.trim()
+        };
+      });
+    });
 
-    const text = await page.evaluate((el) => el.textContent, element);
-    await page.close();
-    return text;
-  } catch (error) {
-    console.error("Scraping failed:", error);
-    return "Error fetching data";
+    await browser.close();
+    return result;
+  } catch (err) {
+    console.error("Scraping error:", err);
+    await browser.close();
+    return null;
   }
 }
 
 async function refreshCache() {
-  if (isRefreshing) return;
-  isRefreshing = true;
-
   console.log("Refreshing cache...");
-
-  try {
-    engCache = await fetchDotaRankings(
-      "#root > div > div > div > div:nth-child(3) > div:nth-child(5) > div:nth-child(1) > div > span"
-    );
-    krCache = await fetchDotaRankings(
-      "#root > div > div > div > div:nth-child(3) > div:nth-child(5) > div:nth-child(2) > div > span"
-    );
-    console.log("Cache updated.");
-  } catch (error) {
-    console.error("Cache refresh error:", error);
-  } finally {
-    isRefreshing = false;
+  const data = await fetchDotaRankings();
+  if (data) {
+    cachedData = data;
+    lastUpdated = new Date().toISOString();
+    console.log("Cache updated successfully.");
+  } else {
+    console.log("Cache update failed.");
   }
 }
 
-setInterval(refreshCache, 60 * 60 * 1000);
+// 초기 캐시 로딩
 refreshCache();
-
-app.use(cors());
-app.use(responseTime());
+// 5분마다 업데이트
+setInterval(refreshCache, 5 * 60 * 1000);
 
 app.get("/", (req, res) => {
-  res.send("Nightbot Dota Ranking API (Render Optimized)");
+  res.send({
+    updated: lastUpdated,
+    count: cachedData?.length || 0,
+    data: cachedData
+  });
 });
 
-function formatRank(text) {
-  if (!text || text.includes("Error")) return "데이터 오류";
-  return text.replace("Leaderboard : ", "Rank: ");
-}
-
-app.get("/nightbot", async (req, res) => {
-  const { q } = req.query;
-  if (!q || q !== "today") return res.send("다시 시도해주세요.");
-
-  console.log("Nightbot request received.");
-
-  const englishRank = formatRank(engCache);
-  const koreanRank = formatRank(krCache);
-
-  res.set(
-    "User-Agent",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-  );
-  res.set("Cache-Control", "public, max-age=60");
-
-  const response = `오늘 LOWPRIO에 빠질 확률은 [${englishRank}] 입니다.\n한국 TOP1도마찬가지입니다 : [${koreanRank}]`;
-  res.send(response);
-});
-
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => console.log(`Server running on ${PORT}`));
