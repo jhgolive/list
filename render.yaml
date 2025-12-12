@@ -5,14 +5,5 @@ services:
     region: singapore
     plan: free
     dockerfilePath: ./Dockerfile
-    dockerCommand: ""   # Dockerfile CMD 사용 → 비워두기
     autoDeploy: true
-
-    envVars:
-      - key: CHROMIUM_PATH
-        value: "/usr/bin/chromium"
-
     healthCheckPath: "/"
-    scaling:
-      minInstances: 1
-      maxInstances: 1
