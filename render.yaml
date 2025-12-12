@@ -1,17 +1,9 @@
 services:
   - type: web
     name: dota-ranking
-    env: node
+    env: docker
     plan: free
     region: singapore
-
-    buildCommand: |
-      yarn install
-
-    startCommand: node server.js
-
-    envVars:
-      - key: PUPPETEER_EXECUTABLE_PATH
-        value: "/usr/bin/chromium"
-      - key: PUPPETEER_SKIP_DOWNLOAD
-        value: "true"
+    dockerfilePath: ./Dockerfile
+    buildCommand: ""
+    startCommand: ""
