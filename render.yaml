@@ -2,8 +2,17 @@ services:
   - type: web
     name: dota-ranking
     env: docker
-    plan: free
     region: singapore
+    plan: free
     dockerfilePath: ./Dockerfile
-    buildCommand: ""
-    startCommand: ""
+    dockerCommand: ""   # Dockerfile CMD 사용 → 비워두기
+    autoDeploy: true
+
+    envVars:
+      - key: CHROMIUM_PATH
+        value: "/usr/bin/chromium"
+
+    healthCheckPath: "/"
+    scaling:
+      minInstances: 1
+      maxInstances: 1
