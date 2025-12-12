@@ -13,16 +13,23 @@ app.use(responseTime());
 let cachedData = null;
 let lastUpdated = null;
 
+// Render 서버에서 설치될 Chrome 경로
+const CHROME_PATH = process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/chromium";
+
 const LAUNCH_OPTIONS = {
-  headless: "new",
+  executablePath: CHROME_PATH,
+  headless: true,
   args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage"
-  ]
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+    "--disable-software-rasterizer",
+  ],
 };
 
 async function getBrowser() {
+  console.log("Launching Chromium at:", CHROME_PATH);
   return await puppeteer.launch(LAUNCH_OPTIONS);
 }
 
