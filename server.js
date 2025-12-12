@@ -12,8 +12,25 @@ const PORT = process.env.PORT || 3000;
 // =====================
 // Puppeteer Launch Options (Render + Docker 완전 대응)
 // =====================
+const CHROME_PATHS = [
+  process.env.PUPPETEER_EXECUTABLE_PATH,
+  "/usr/bin/chromium-browser",
+  "/usr/bin/chromium",
+  "/usr/bin/google-chrome",
+  "/usr/bin/google-chrome-stable"
+].filter(Boolean);
+
+function findChrome() {
+  for (const p of CHROME_PATHS) {
+    if (fs.existsSync(p)) return p;
+  }
+  console.error("❌ Chrome 실행 파일을 찾을 수 없음. 경로 리스트:", CHROME_PATHS);
+  return null;
+}
+
 const PUPPETEER_OPTIONS = {
-  headless: true,
+  headless: "new",
+  executablePath: findChrome(),
   args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
@@ -23,9 +40,9 @@ const PUPPETEER_OPTIONS = {
     "--disable-backgrounding-occluded-windows",
     "--disable-renderer-backgrounding",
     "--no-first-run",
-    "--no-zygote"
+    "--no-zygote",
+    "--single-process"
   ]
-  // ⚠ executablePath 절대 넣지 않음 (Docker 이미지가 알아서 설정함)
 };
 
 // =====================
