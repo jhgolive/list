@@ -2,6 +2,7 @@ services:
   - type: web
     name: dota-ranking
     env: node
+    plan: free
     region: singapore
     buildCommand: |
       apt-get update
