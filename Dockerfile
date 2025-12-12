@@ -2,7 +2,8 @@ FROM ghcr.io/puppeteer/puppeteer:latest
 
 WORKDIR /app
 
-COPY package.json package-lock.json* yarn.lock* ./
+# 패키지 파일만 먼저 복사 — 둘 중 있는 것만 복사
+COPY package*.json ./
 
 RUN npm install
 
