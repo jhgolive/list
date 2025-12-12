@@ -1,3 +1,4 @@
+import fs from "fs";
 import express from "express";
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
