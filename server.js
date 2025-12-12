@@ -14,18 +14,13 @@ let cachedData = null;
 let lastUpdated = null;
 
 // Render 서버에서 설치될 Chrome 경로
-const CHROME_PATH = process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/chromium";
-
 const LAUNCH_OPTIONS = {
-  executablePath: CHROME_PATH,
-  headless: true,
+  headless: "new",
   args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage",
-    "--disable-gpu",
-    "--disable-software-rasterizer",
-  ],
+    "--disable-dev-shm-usage"
+  ]
 };
 
 async function getBrowser() {
