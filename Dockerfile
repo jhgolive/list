@@ -1,6 +1,5 @@
 FROM node:20-slim
 
-# 필수 라이브러리 설치
 RUN apt-get update && apt-get install -y \
     chromium \
     chromium-sandbox \
@@ -12,8 +11,9 @@ ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium-browser"
 ENV PUPPETEER_SKIP_DOWNLOAD="true"
 
 WORKDIR /app
-COPY package.json yarn.lock ./
-RUN yarn install --production
+
+COPY package.json ./
+RUN npm install --omit=dev
 
 COPY . .
 
