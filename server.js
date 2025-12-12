@@ -13,8 +13,7 @@ const PORT = process.env.PORT || 3000;
 // Puppeteer Launch Options (Render + Docker 완전 대응)
 // =====================
 const PUPPETEER_OPTIONS = {
-  headless: "new",
-  executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/chromium",
+  headless: true,
   args: [
     "--no-sandbox",
     "--disable-setuid-sandbox",
@@ -24,9 +23,9 @@ const PUPPETEER_OPTIONS = {
     "--disable-backgrounding-occluded-windows",
     "--disable-renderer-backgrounding",
     "--no-first-run",
-    "--no-zygote",
-    "--single-process"
+    "--no-zygote"
   ]
+  // ⚠ executablePath 절대 넣지 않음 (Docker 이미지가 알아서 설정함)
 };
 
 // =====================
@@ -197,7 +196,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
 
   const formatted = results.map((r, i) => `💥No${i + 1}${r.text.replace(/\n/g, "\n  || ")}`);
 
-  const chunks = splitByEvents(formatted, 1); // part=1개씩 출력
+  const chunks = splitByEvents(formatted, 1);
 
   const updatedTime = formatKSTTime();
 
