@@ -234,11 +234,11 @@ async function fetchEventsForDate(dateIso, datePretty) {
 // 1시간마다 자동 갱신
 // =====================
 async function refreshCache() {
-  console.log("♻️ 7일치 캐시 갱신 시작");
+  console.log("♻️ 2일치 캐시 갱신 시작");
   const today = getKSTDate();
   today.setHours(0, 0, 0, 0);
 
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 2; i++) {
     const date = new Date(today);
     date.setDate(today.getDate() + i);
     const iso = formatYYYYMMDD(date);
