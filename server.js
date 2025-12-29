@@ -218,7 +218,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
 
   const updatedTime = formatKSTTime();
 
-  const full = `✨ ${datePretty}  ${results.length}건\n\n${chunks.join("\n\n")}\n\n💫 ${updatedTime} 업데이트 @순대천사`;
+  const full = `✨ ${datePretty}  ${results.length}건\n\n${chunks.join("\n\n")}\n\n💫 ${updatedTime} 업데이트 💠순대천사`;
 
   cache.set(dateIso, {
     updated: Date.now(),
