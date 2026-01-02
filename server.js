@@ -102,7 +102,8 @@ function formatKSTTime() {
   const d = String(kst.getDate()).padStart(2, "0");
   const hh = String(kst.getHours()).padStart(2, "0");
   const mm = String(kst.getMinutes()).padStart(2, "0");
-  return `${y}-${m}-${d} ${hh}:${mm}`;
+  //return `${y}-${m}-${d} ${hh}:${mm}`;
+  return `${m}-${d} ${hh}:${mm}`;  // 연도 제거
 }
 
 // =====================
@@ -293,7 +294,8 @@ app.get("/nightbot", async (req, res) => {
       const d = String(kst.getDate()).padStart(2, "0");
       const hh = String(kst.getHours()).padStart(2, "0");
       const mm = String(kst.getMinutes()).padStart(2, "0");
-      out += `\n\n💫 ${y}-${m}-${d} ${hh}:${mm} 업데이트`;
+      //out += `\n\n💫 ${y}-${m}-${d} ${hh}:${mm} 업데이트`;
+      out += `\n\n💫 ${m}-${d} ${hh}:${mm} 업데이트`;  // 연도 제거
     }
 
     return res.type("text/plain").send(out);
