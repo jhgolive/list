@@ -218,7 +218,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
   //const formatted = results.map((r, i) => `💥No${i + 1}${r.text.replace(/\n/g, "\n⚡")}`);
   const NEW_COUNT = 3;
   const newOrders = results
-    .sort((a, b) => a.order - b.order)
+    .sort((a, b) => b.order - a.order)
     .slice(0, NEW_COUNT)
     .map(r => r.order);
   
