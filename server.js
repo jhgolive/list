@@ -213,7 +213,14 @@ async function fetchEventsForDate(dateIso, datePretty) {
 
   results.sort((a, b) => (a.start - b.start) || (a.end - b.end));
 
-  const formatted = results.map((r, i) => `💥No${i + 1}${r.text.replace(/\n/g, "\n⚡")}`);
+  //const formatted = results.map((r, i) => `💥No${i + 1}${r.text.replace(/\n/g, "\n⚡")}`);
+  const NEW_COUNT = 3;  // 목록 마지막 NEW 아이콘 처리
+  const formatted = results.map((r, i) => {
+    const isNew = i >= results.length - NEW_COUNT;
+    const icon = isNew ? "🆕No" : "💥No" + (i + 1);
+  
+    return `${icon}${r.text.replace(/\n/g, "\n⚡")}`;
+  });
 
   const chunks = splitByEvents(formatted, 1);
 
