@@ -235,7 +235,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
 
   const updatedTime = formatKSTTime();
 
-  const full = `✨ ${datePretty}  ${results.length}건\n\n${chunks.join("\n\n")}\n\n💫 ${updatedTime} 업데이트 @쩡햄Live`;
+  const full = `✨ ${datePretty}  ${results.length}건\n\n${chunks.join("\n\n")}\n\n💫 ${updatedTime}  @쩡햄Live`;
 
   cache.set(dateIso, {
     updated: Date.now(),
@@ -310,7 +310,7 @@ app.get("/nightbot", async (req, res) => {
       const d = String(kst.getDate()).padStart(2, "0");
       const hh = String(kst.getHours()).padStart(2, "0");
       const mm = String(kst.getMinutes()).padStart(2, "0");
-      //out += `\n\n💫 ${y}-${m}-${d} ${hh}:${mm} 업데이트`;
+      //out += `\n\n💫 ${y}-${m}-${d} ${hh}:${mm}  @쩡햄Live`;
       out += `\n\n💫 ${m}-${d} ${hh}:${mm} 업데이트`;  // 연도 제거
     }
 
