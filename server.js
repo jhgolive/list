@@ -226,9 +226,11 @@ async function fetchEventsForDate(dateIso, datePretty) {
 
   const formatted = results.map((r, i) => {
     const isNew = newOrders.includes(r.order);
-    const icon = isNew ? `💢No${i + 1}` : `💥No${i + 1}`;
+    //const icon = isNew ? `💢No${i + 1}` : `💥No${i + 1}`;
+    const icon = isNew ? `${r.text.replace(/\n/g, "💢\n⚡")}` : `${r.text.replace(/\n/g, "\n⚡")}`;
   
-    return `${icon}${r.text.replace(/\n/g, "\n⚡")}`;
+    //return `${icon}${r.text.replace(/\n/g, "\n⚡")}`;
+    return `💥No${i + 1}${icon}`;
   });
   
   const chunks = splitByEvents(formatted, 1);
