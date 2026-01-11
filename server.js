@@ -224,20 +224,37 @@ async function fetchEventsForDate(dateIso, datePretty) {
   
   results.sort((a, b) => (a.start - b.start) || (a.end - b.end));
 
+  //const formatted = results.map((r, i) => {
+    //const isNew = newOrders.includes(r.order);
+    //const icon = isNew ? `💢No${i + 1}` : `💥No${i + 1}`;
+    
+    //return `${icon}${r.text.replace(/\n/g, "\n⚡")}`;
+  //});
+
   const formatted = results.map((r, i) => {
     const isNew = newOrders.includes(r.order);
-    //const icon = isNew ? `💢No${i + 1}` : `💥No${i + 1}`;
-    const icon = isNew ? `${r.text.replace(/\n/g, "💢\n⚡")}` : `${r.text.replace(/\n/g, "\n⚡")}`;
+    const lines = r.text.split("\n");
   
-    //return `${icon}${r.text.replace(/\n/g, "\n⚡")}`;
-    return `💥No${i + 1}${icon}`;
+    // 첫 줄 (제목)
+    let text = lines[0];
+  
+    // 나머지 줄
+    const rest = lines.slice(1).map(line => `⚡${line}`).join("\n");
+  
+    if (isNew) {
+      text += `💢\n${rest}`;
+    } else {
+      text += `\n${rest}`;
+    }
+  
+    return `💥No${i + 1}${text}`;
   });
   
   const chunks = splitByEvents(formatted, 1);
 
   const updatedTime = formatKSTTime();
 
-  const full = `✨ ${datePretty}  ${results.length}건\n\n${chunks.join("\n\n")}\n\n💫 ${updatedTime} 💢 최근  @쩡햄Live`;
+  const full = `✨ ${datePretty}  ${results.length}건\n\n${chunks.join("\n\n")}\n\n💫 ${updatedTime} 💢 신규  @쩡햄Live`;
 
   cache.set(dateIso, {
     updated: Date.now(),
