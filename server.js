@@ -168,8 +168,16 @@ async function fetchEventsForDate(dateIso, datePretty) {
 
   await page.close();
 
+  //if (!links.length) {
+    //const text = `${datePretty}\n\n해당 날짜에 일정이 없습니다.`;
+    //cache.set(dateIso, { updated: Date.now(), full: text, chunks: [text], count: 0 });
+    //return;
+  //}
   if (!links.length) {
-    const text = `${datePretty}\n\n해당 날짜에 일정이 없습니다.`;
+    const warningLine = isDateSum18(dateIso) ? "\n💢 재난 참사 조심 💢\n" : "\n";
+
+    const text = `✨ ${datePretty}  0건` + warningLine + `\n해당 날짜에 일정이 없습니다.\n\n💫 ${updatedTime} ✨신규  @쩡햄Live`;
+    
     cache.set(dateIso, { updated: Date.now(), full: text, chunks: [text], count: 0 });
     return;
   }
