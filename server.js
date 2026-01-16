@@ -174,7 +174,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
     //return;
   //}
   if (!links.length) {
-    const warningLine = isDateSum18(dateIso) ? "\n💢 재난 참사 조심 💢\n" : "\n";
+    const warningLine = isDateSum18(dateIso) ? "\n💢 재난 사고 조심 💢\n" : "\n";
 
     const text = `✨ ${datePretty}  0건` + warningLine + `\n해당 날짜에 일정이 없습니다.\n\n💫 ${formatKSTTime()} ✨신규  @쩡햄Live`;
     
@@ -270,7 +270,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
   const updatedTime = formatKSTTime();
 
   //const full = `✨ ${datePretty}  ${results.length}건\n\n${chunks.join("\n\n")}\n\n💫 ${updatedTime} ✨신규  @쩡햄Live`;
-  const warningLine = isDateSum18(dateIso) ? "\n💢 재난 참사 조심 💢\n" : "\n";
+  const warningLine = isDateSum18(dateIso) ? "\n💢 재난 사고 조심 💢\n" : "\n";
 
   const full = `✨ ${datePretty}  ${results.length}건` + warningLine + `\n${chunks.join("\n\n")}\n\n💫 ${updatedTime} ✨신규  @쩡햄Live`;
 
