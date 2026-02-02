@@ -157,7 +157,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
   const browser = await getBrowser();
   const page = await browser.newPage();
 
-  const url = `https://kukmin.libertysocial.co.kr/assembly?date=${encodeURIComponent(dateIso)}`;
+  //const url = `https://kukmin.libertysocial.co.kr/assembly?date=${encodeURIComponent(dateIso)}`;
+  const url = `https://kukmin.libertysocial.co.kr/assembly?tab=calendar&date=${encodeURIComponent(dateIso)}`;
   await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
 
   const links = await page.evaluate(() =>
