@@ -180,7 +180,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
 
     const warningLine = isDateSum18(dateIso) ? `💢 ${datePretty} 사고 조심  0건` : `✨ ${datePretty}  0건`;
 
-    const text = warningLine + `\n\n해당 날짜에 일정이 없습니다.\n\n💫 ${formatKSTTime()} ✨신규 💢레드데이  @쩡햄Live`;
+    const text = warningLine + `\n\n   - 해당 날짜에 일정이 없습니다. -\n\n💫 ${formatKSTTime()} ✨신규 💢레드데이  @쩡햄Live`;
     
     cache.set(dateIso, { updated: Date.now(), full: text, chunks: [text], count: 0 });
     return;
