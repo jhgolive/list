@@ -9,6 +9,7 @@ puppeteer.use(StealthPlugin());
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const fetching = new Map();
 
 // =====================
 // Puppeteer Launch Options (Render + Docker 완전 대응)
@@ -161,167 +162,214 @@ const cache = new Map();
 // 일정 크롤링
 // =====================
 async function fetchEventsForDate(dateIso, datePretty) {
-  console.log(`📅 크롤링: ${dateIso}`);
-  const browser = await getBrowser();
-  const page = await browser.newPage();
-
-  //const url = `https://kukmin.libertysocial.co.kr/assembly?date=${encodeURIComponent(dateIso)}`;
-  const url = `https://kukmin.libertysocial.co.kr/assembly?tab=calendar&date=${encodeURIComponent(dateIso)}`;
-  await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
-
-  const links = await page.evaluate(() =>
-    Array.from(document.querySelectorAll("a[href*='/assembly/']"))
-      .map((a, i) => ({ href: a.href, order: i })) // order = 사이트 등록 순서
-      .filter((v, i, arr) => arr.findIndex(x => x.href === v.href) === i)
-  );
-
-  await page.close();
-
-  //if (!links.length) {
-    //const text = `${datePretty}\n\n해당 날짜에 일정이 없습니다.`;
-    //cache.set(dateIso, { updated: Date.now(), full: text, chunks: [text], count: 0 });
-    //return;
-  //}
-  if (!links.length) {
-    //const warningLine = isDateSum18(dateIso) ? "\n💢 재난 사고 조심 💢\n" : "\n";
-    //const text = `✨ ${datePretty}  0건` + warningLine + `\n해당 날짜에 일정이 없습니다.\n\n💫 ${formatKSTTime()} ✨신규 💢레드데이  @쩡햄Live`;
-
-    const warningLine = isDateSum18(dateIso) ? `💢 ${datePretty} 사고조심  0건` : `✨ ${datePretty}  0건`;
-
-    const text = warningLine + `\n\n   - 해당 날짜에 일정이 없습니다. -\n\n💫${formatKSTTime()} ✨신규 💢레드데이  🍖쩡햄Live`;
-    
-    cache.set(dateIso, { updated: Date.now(), full: text, chunks: [text], count: 0 });
+  if (fetching.get(dateIso)) {
+    console.log(`⏳ 이미 크롤링 중: ${dateIso}`);
     return;
   }
 
-  const results = [];
+  fetching.set(dateIso, true);
 
-  for (const { href, order } of links) {
-    const detail = await browser.newPage();
-    try {
-      await detail.goto(href, { waitUntil: "networkidle2", timeout: 60000 });
-  
-      const event = await detail.evaluate(() => {
-        const title = document.querySelector("header.flex.justify-between h1.line-clamp-2")?.innerText.trim();
-        const container = document.querySelector(".flex.flex-col.gap-2.border-b.px-4.pb-4.pt-2");
-
-        const info = {};
-        if (container) {
-          container.querySelectorAll("div.flex.w-full.min-w-0.flex-1.items-center.justify-start.gap-2").forEach(div => {
-            const label = div.querySelector("div.font-semibold.text-kukmin-secondary")?.innerText;
-            const value = div.querySelector("div.min-w-0.flex-1")?.innerText.trim();
-            if (label) info[label] = value;
-          });
-        }
-
-        return {
-          title,
-          date: info["날짜"] || null,
-          time: info["시간"] || null,
-          place: info["장소"] || null,
-          organizer: info["주관"] || null,
-        };
-      });
-
-      if (event && event.title) {
-        const kstTime = convertTimeRangeToKST(event.time);
-        const [startStr, endStr] = kstTime?.split("~").map(t => t.trim()) || [];
-  
-        results.push({
-          text: `: ${event.title}\n주관: ${event.organizer || "-"}\n장소: ${event.place || "-"}\n시간: ${kstTime || "-"}\n${href}`,
-          start: startStr ? timeToNumber(startStr) : 0,
-          end: endStr ? timeToNumber(endStr) : 9999,
-          order, // 🔥 등록 순서
-        });
-      }
-    } finally {
-        try {
-          if (!detail.isClosed()) {
-            await detail.close();
-          }
-        } catch (e) {
-          console.log("⚠️ 페이지 close 중 에러 무시:", e.message);
-        }
-      }
-  }
-
-  results.sort((a, b) => (a.start - b.start) || (a.end - b.end));
-
-  // 목록 마지막 3개 NEW 아이콘 표시
-  //const formatted = results.map((r, i) => `💥No${i + 1}${r.text.replace(/\n/g, "\n⚡")}`);
-  const NEW_COUNT = 3;
-  const newOrders = results
-    .sort((a, b) => b.order - a.order)
-    .slice(0, NEW_COUNT)
-    .map(r => r.order);
-  
-  results.sort((a, b) => (a.start - b.start) || (a.end - b.end));
-
-  //const formatted = results.map((r, i) => {
-    //const isNew = newOrders.includes(r.order);
-    //const icon = isNew ? `💢No${i + 1}` : `💥No${i + 1}`;
+  try {
+    console.log(`📅 크롤링: ${dateIso}`);
+    let browser = await getBrowser();
+    let page;
     
-    //return `${icon}${r.text.replace(/\n/g, "\n⚡")}`;
-  //});
-
-  const formatted = results.map((r, i) => {
-    const isNew = newOrders.includes(r.order);
-    const lines = r.text.split("\n");
-  
-    // 첫 줄 (제목)
-    let text = lines[0];
-  
-    // 나머지 줄
-    const rest = lines.slice(1).map(line => `⚡${line}`).join("\n");
-  
-    if (isNew) {
-      text += `✨\n${rest}`;
-    } else {
-      text += `\n${rest}`;
+    try {
+      page = await browser.newPage();
+    } catch (e) {
+      console.log("💥 newPage 실패 → 브라우저 재시작");
+    
+      if (browser) {
+        try { await browser.close(); } catch {}
+      }
+    
+      globalThis.browser = null; // 💥 핵심
+    
+      browser = await getBrowser();
+      page = await browser.newPage();
     }
   
-    return `💥No${i + 1}${text}`;
-  });
+    //const url = `https://kukmin.libertysocial.co.kr/assembly?date=${encodeURIComponent(dateIso)}`;
+    const url = `https://kukmin.libertysocial.co.kr/assembly?tab=calendar&date=${encodeURIComponent(dateIso)}`;
+    await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
   
-  const chunks = splitByEvents(formatted, 1);
-
-  const updatedTime = formatKSTTime();
-
-  //const full = `✨ ${datePretty}  ${results.length}건\n\n${chunks.join("\n\n")}\n\n💫 ${updatedTime} ✨신규  @쩡햄Live`;
-  //const warningLine = isDateSum18(dateIso) ? "\n💢 재난 사고 조심 💢\n" : "\n";
-  //const full = `✨ ${datePretty}  ${results.length}건` + warningLine + `\n${chunks.join("\n\n")}\n\n💫 ${updatedTime} ✨신규 💢레드데이  @쩡햄Live`;
-
-  const warningLine = isDateSum18(dateIso) ? `💢 ${datePretty} 사고조심  ${results.length}건` : `✨ ${datePretty}  ${results.length}건`;
-
-  const full = warningLine + `\n\n${chunks.join("\n\n")}\n\n💫${updatedTime} ✨신규 💢레드데이  🍖쩡햄Live`;
+    const links = await page.evaluate(() =>
+      Array.from(document.querySelectorAll("a[href*='/assembly/']"))
+        .map((a, i) => ({ href: a.href, order: i })) // order = 사이트 등록 순서
+        .filter((v, i, arr) => arr.findIndex(x => x.href === v.href) === i)
+    );
   
-  cache.set(dateIso, {
-    updated: Date.now(),
-    full,
-    chunks,
-    count: results.length,
-  });
+    try {
+      if (!page.isClosed()) {
+        await page.close();
+      }
+    } catch (e) {
+      console.log("⚠️ 메인 페이지 close 에러 무시:", e.message);
+    }
+  
+    //if (!links.length) {
+      //const text = `${datePretty}\n\n해당 날짜에 일정이 없습니다.`;
+      //cache.set(dateIso, { updated: Date.now(), full: text, chunks: [text], count: 0 });
+      //return;
+    //}
+    if (!links.length) {
+      //const warningLine = isDateSum18(dateIso) ? "\n💢 재난 사고 조심 💢\n" : "\n";
+      //const text = `✨ ${datePretty}  0건` + warningLine + `\n해당 날짜에 일정이 없습니다.\n\n💫 ${formatKSTTime()} ✨신규 💢레드데이  @쩡햄Live`;
+  
+      const warningLine = isDateSum18(dateIso) ? `💢 ${datePretty} 사고조심  0건` : `✨ ${datePretty}  0건`;
+  
+      const text = warningLine + `\n\n   - 해당 날짜에 일정이 없습니다. -\n\n💫${formatKSTTime()} ✨신규 💢레드데이  🍖쩡햄Live`;
+      
+      cache.set(dateIso, { updated: Date.now(), full: text, chunks: [text], count: 0 });
+      return;
+    }
+  
+    const results = [];
 
-  console.log(`✅ 캐시 완료: ${dateIso} (${results.length}건)`);
+    for (const { href, order } of links) {
+      const detail = await browser.newPage();
+      try {
+        await detail.goto(href, { waitUntil: "networkidle2", timeout: 60000 });
+    
+        const event = await detail.evaluate(() => {
+          const title = document.querySelector("header.flex.justify-between h1.line-clamp-2")?.innerText.trim();
+          const container = document.querySelector(".flex.flex-col.gap-2.border-b.px-4.pb-4.pt-2");
+  
+          const info = {};
+          if (container) {
+            container.querySelectorAll("div.flex.w-full.min-w-0.flex-1.items-center.justify-start.gap-2").forEach(div => {
+              const label = div.querySelector("div.font-semibold.text-kukmin-secondary")?.innerText;
+              const value = div.querySelector("div.min-w-0.flex-1")?.innerText.trim();
+              if (label) info[label] = value;
+            });
+          }
+  
+          return {
+            title,
+            date: info["날짜"] || null,
+            time: info["시간"] || null,
+            place: info["장소"] || null,
+            organizer: info["주관"] || null,
+          };
+        });
+  
+        if (event && event.title) {
+          const kstTime = convertTimeRangeToKST(event.time);
+          const [startStr, endStr] = kstTime?.split("~").map(t => t.trim()) || [];
+    
+          results.push({
+            text: `: ${event.title}\n주관: ${event.organizer || "-"}\n장소: ${event.place || "-"}\n시간: ${kstTime || "-"}\n${href}`,
+            start: startStr ? timeToNumber(startStr) : 0,
+            end: endStr ? timeToNumber(endStr) : 9999,
+            order, // 🔥 등록 순서
+          });
+        }
+      } finally {
+          try {
+            if (!detail.isClosed()) {
+              await detail.close();
+            }
+          } catch (e) {
+            console.log("⚠️ 페이지 close 중 에러 무시:", e.message);
+          }
+        }
+    }
+  
+    results.sort((a, b) => (a.start - b.start) || (a.end - b.end));
+  
+    // 목록 마지막 3개 NEW 아이콘 표시
+    //const formatted = results.map((r, i) => `💥No${i + 1}${r.text.replace(/\n/g, "\n⚡")}`);
+    const NEW_COUNT = 3;
+    const newOrders = results
+      .sort((a, b) => b.order - a.order)
+      .slice(0, NEW_COUNT)
+      .map(r => r.order);
+    
+    results.sort((a, b) => (a.start - b.start) || (a.end - b.end));
+  
+    //const formatted = results.map((r, i) => {
+      //const isNew = newOrders.includes(r.order);
+      //const icon = isNew ? `💢No${i + 1}` : `💥No${i + 1}`;
+      
+      //return `${icon}${r.text.replace(/\n/g, "\n⚡")}`;
+    //});
+  
+    const formatted = results.map((r, i) => {
+      const isNew = newOrders.includes(r.order);
+      const lines = r.text.split("\n");
+    
+      // 첫 줄 (제목)
+      let text = lines[0];
+    
+      // 나머지 줄
+      const rest = lines.slice(1).map(line => `⚡${line}`).join("\n");
+    
+      if (isNew) {
+        text += `✨\n${rest}`;
+      } else {
+        text += `\n${rest}`;
+      }
+    
+      return `💥No${i + 1}${text}`;
+    });
+    
+    const chunks = splitByEvents(formatted, 1);
+  
+    const updatedTime = formatKSTTime();
+  
+    //const full = `✨ ${datePretty}  ${results.length}건\n\n${chunks.join("\n\n")}\n\n💫 ${updatedTime} ✨신규  @쩡햄Live`;
+    //const warningLine = isDateSum18(dateIso) ? "\n💢 재난 사고 조심 💢\n" : "\n";
+    //const full = `✨ ${datePretty}  ${results.length}건` + warningLine + `\n${chunks.join("\n\n")}\n\n💫 ${updatedTime} ✨신규 💢레드데이  @쩡햄Live`;
+  
+    const warningLine = isDateSum18(dateIso) ? `💢 ${datePretty} 사고조심  ${results.length}건` : `✨ ${datePretty}  ${results.length}건`;
+  
+    const full = warningLine + `\n\n${chunks.join("\n\n")}\n\n💫${updatedTime} ✨신규 💢레드데이  🍖쩡햄Live`;
+    
+    cache.set(dateIso, {
+      updated: Date.now(),
+      full,
+      chunks,
+      count: results.length,
+    });
+  
+    console.log(`✅ 캐시 완료: ${dateIso} (${results.length}건)`);
+  } finally {
+    fetching.delete(dateIso);
+  }
 }
 
 // =====================
 // 1시간마다 자동 갱신
 // =====================
+let isRefreshing = false;
+
 async function refreshCache() {
-  console.log("♻️ 2일치 캐시 갱신 시작");
-  const today = getKSTDate();
-  today.setHours(0, 0, 0, 0);
-
-  for (let i = 0; i < 2; i++) {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
-    const iso = formatYYYYMMDD(date);
-    const pretty = formatKoreanDate(date);
-
-    await fetchEventsForDate(iso, pretty);
+  if (isRefreshing) {
+    console.log("⏳ 이미 캐시 갱신 중");
+    return;
   }
-  console.log("✅ 캐시 갱신 완료");
+
+  isRefreshing = true;
+
+  try {
+    console.log("♻️ 2일치 캐시 갱신 시작");
+
+    const today = getKSTDate();
+    today.setHours(0, 0, 0, 0);
+
+    for (let i = 0; i < 2; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      const iso = formatYYYYMMDD(date);
+      const pretty = formatKoreanDate(date);
+
+      await fetchEventsForDate(iso, pretty);
+    }
+
+    console.log("✅ 캐시 갱신 완료");
+  } finally {
+    isRefreshing = false;
+  }
 }
 setInterval(refreshCache, 60 * 60 * 1000);
 refreshCache();
