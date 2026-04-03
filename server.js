@@ -183,7 +183,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
         try { await browser.close(); } catch {}
       }
     
-      globalThis.browser = null; // 💥 핵심
+      browser = null; // 💥 핵심
     
       browser = await getBrowser();
       page = await browser.newPage();
