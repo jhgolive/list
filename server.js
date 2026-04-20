@@ -154,6 +154,90 @@ function isDateSum18(dateIso) {
 }
 
 // =====================
+// 날씨
+// =====================
+async function fetchWeather(dateIso) {
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&hourly=temperature_2m,precipitation_probability,precipitation,weathercode&timezone=Asia/Seoul`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const hours = data.hourly.time;
+    const temps = data.hourly.temperature_2m;
+    const pops = data.hourly.precipitation_probability;
+    const precs = data.hourly.precipitation;
+    const codes = data.hourly.weathercode;
+
+    // 해당 날짜 필터
+    const dayData = hours.map((t, i) => ({
+      time: t,
+      temp: temps[i],
+      pop: pops[i],
+      prec: precs[i],
+      code: codes[i]
+    })).filter(v => v.time.startsWith(dateIso));
+
+    if (!dayData.length) return null;
+
+    // 🌡️ 최저/최고
+    const minTemp = Math.min(...dayData.map(v => v.temp));
+    const maxTemp = Math.max(...dayData.map(v => v.temp));
+
+    // 💧 최대 강수량
+    const maxPrecip = Math.max(...dayData.map(v => v.prec));
+
+    // ⏱️ 6시간씩 4구간
+    const chunks = [[], [], [], []];
+    dayData.forEach(v => {
+      const hour = parseInt(v.time.split("T")[1].slice(0, 2));
+      const idx = Math.floor(hour / 6);
+      chunks[idx].push(v);
+    });
+
+    function getIcon(block) {
+      if (!block.length) return "⛅";
+
+      // 🌧️ 비/눈 우선
+      if (block.some(v => v.prec > 0)) return "☔";
+      if (block.some(v => v.code >= 70 && v.code < 80)) return "❄️";
+
+      // 🌤️ 지배적인 날씨
+      const counts = {};
+      block.forEach(v => {
+        counts[v.code] = (counts[v.code] || 0) + 1;
+      });
+
+      const dominant = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+
+      if (dominant == 0) return "☀️";
+      if (dominant < 3) return "⛅";
+      return "☁️";
+    }
+
+    function getPop(block) {
+      if (!block.length) return 0;
+      return Math.max(...block.map(v => v.pop));
+    }
+
+    const icons = chunks.map(getIcon);
+    const pops4 = chunks.map(getPop);
+
+    return {
+      min: Math.round(minTemp),
+      max: Math.round(maxTemp),
+      icons,
+      pops: pops4,
+      maxPrecip: Math.round(maxPrecip)
+    };
+
+  } catch (e) {
+    console.error("❌ 날씨 가져오기 실패:", e.message);
+    return null;
+  }
+}
+
+// =====================
 // 캐시 저장소
 // =====================
 const cache = new Map();
@@ -188,7 +272,20 @@ async function fetchEventsForDate(dateIso, datePretty) {
       browser = await getBrowser();
       page = await browser.newPage();
     }
-  
+
+    const weather = await fetchWeather(dateIso);
+    let weatherLine = "";
+
+    if (weather) {
+      weatherLine =
+        `    ${weather.min}°/${weather.max}° ` +
+        `${weather.icons[0]}${weather.pops[0]}%/ ` +
+        `${weather.icons[1]}${weather.pops[1]}%/ ` +
+        `${weather.icons[2]}${weather.pops[2]}%/ ` +
+        `${weather.icons[3]}${weather.pops[3]}%/ ` +
+        `${weather.maxPrecip}mm\n\n`;
+    }
+    
     //const url = `https://kukmin.libertysocial.co.kr/assembly?date=${encodeURIComponent(dateIso)}`;
     const url = `https://kukmin.libertysocial.co.kr/assembly?tab=calendar&date=${encodeURIComponent(dateIso)}`;
     await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
@@ -218,7 +315,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
   
       const warningLine = isDateSum18(dateIso) ? `💢 ${datePretty} 사고조심  0건` : `✨ ${datePretty}  0건`;
   
-      const text = warningLine + `\n\n   - 해당 날짜에 일정이 없습니다. -\n\n💫${formatKSTTime()} ✨신규 💢레드데이  🍖쩡햄Live`;
+      //const text = warningLine + `\n\n   - 해당 날짜에 일정이 없습니다. -\n\n💫${formatKSTTime()} ✨신규 💢레드데이  🍖쩡햄Live`;
+      const text = warningLine + `\n\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `💫${formatKSTTime()} ✨신규 💢레드데이` + `\n☀서울날씨 최저/최고 새벽/아침/낮/저녁/최대강수` + `  🍖쩡햄Live`;
       
       cache.set(dateIso, { updated: Date.now(), full: text, chunks: [text], count: 0 });
       return;
@@ -323,7 +421,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
   
     const warningLine = isDateSum18(dateIso) ? `💢 ${datePretty} 사고조심  ${results.length}건` : `✨ ${datePretty}  ${results.length}건`;
   
-    const full = warningLine + `\n\n${chunks.join("\n\n")}\n\n💫${updatedTime} ✨신규 💢레드데이  🍖쩡햄Live`;
+    //const full = warningLine + `\n\n${chunks.join("\n\n")}\n\n💫${updatedTime} ✨신규 💢레드데이  🍖쩡햄Live`;
+    const full = warningLine + `\n\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `💫${updatedTime} ✨신규 💢레드데이` + `\n☀서울날씨 최저/최고 새벽/아침/낮/저녁/최대강수` + `  🍖쩡햄Live`;
     
     cache.set(dateIso, {
       updated: Date.now(),
