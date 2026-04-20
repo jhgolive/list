@@ -292,7 +292,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
       }
       
       weatherLine =
-        ` ${weather.min}°/${weather.max}° ` +
+        `🌈 ${weather.min}°/${weather.max}° ` +
         `${formatIconPop(weather.icons[0], weather.pops[0])}/` +
         `${formatIconPop(weather.icons[1], weather.pops[1])}/` +
         `${formatIconPop(weather.icons[2], weather.pops[2])}/` +
