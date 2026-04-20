@@ -199,8 +199,11 @@ async function fetchWeather(dateIso) {
       if (!block.length) return "⛅";
 
       // 🌧️ 비/눈 우선
-      if (block.some(v => v.prec > 0)) return "☔";
       if (block.some(v => v.code >= 70 && v.code < 80)) return "❄️";
+      //if (block.some(v => v.prec > 0)) return "☔";
+      //if (block.some(v => v.prec > 0 || v.pop > 0)) return "☔";
+      if (block.some(v => v.prec > 0)) return "☔";
+      if (block.some(v => v.pop >= 40)) return "☔"; // 확률 높을 때만
 
       // 🌤️ 지배적인 날씨
       const counts = {};
