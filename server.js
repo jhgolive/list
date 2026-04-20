@@ -278,11 +278,11 @@ async function fetchEventsForDate(dateIso, datePretty) {
 
     if (weather) {
       weatherLine =
-        `    ${weather.min}°/${weather.max}° ` +
-        `${weather.icons[0]}${weather.pops[0]}%/ ` +
-        `${weather.icons[1]}${weather.pops[1]}%/ ` +
-        `${weather.icons[2]}${weather.pops[2]}%/ ` +
-        `${weather.icons[3]}${weather.pops[3]}%/ ` +
+        `      ${weather.min}°/${weather.max}°` +
+        `${weather.icons[0]}${weather.pops[0]}%/` +
+        `${weather.icons[1]}${weather.pops[1]}%/` +
+        `${weather.icons[2]}${weather.pops[2]}%/` +
+        `${weather.icons[3]}${weather.pops[3]}%/` +
         `${weather.maxPrecip}mm\n\n`;
     }
     
@@ -316,7 +316,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
       const warningLine = isDateSum18(dateIso) ? `💢 ${datePretty} 사고조심  0건` : `✨ ${datePretty}  0건`;
   
       //const text = warningLine + `\n\n   - 해당 날짜에 일정이 없습니다. -\n\n💫${formatKSTTime()} ✨신규 💢레드데이  🍖쩡햄Live`;
-      const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `💫${formatKSTTime()} ✨신규 💢레드데이` + `\n☀서울 최저/최고 새벽/아침/낮/저녁/최대강수` + `  🍖쩡햄Live`;
+      const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `💫${formatKSTTime()} ✨신규 💢레드데이` + `\n🌤서울 최저/최고 새벽/아침/낮/저녁/최대` + `\n🍖쩡햄Live`;
       
       cache.set(dateIso, { updated: Date.now(), full: text, chunks: [text], count: 0 });
       return;
@@ -422,7 +422,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
     const warningLine = isDateSum18(dateIso) ? `💢 ${datePretty} 사고조심  ${results.length}건` : `✨ ${datePretty}  ${results.length}건`;
   
     //const full = warningLine + `\n\n${chunks.join("\n\n")}\n\n💫${updatedTime} ✨신규 💢레드데이  🍖쩡햄Live`;
-    const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `💫${updatedTime} ✨신규 💢레드데이` + `\n☀서울 최저/최고 새벽/아침/낮/저녁/최대강수` + `  🍖쩡햄Live`;
+    const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `💫${updatedTime} ✨신규 💢레드데이` + `\n🌤서울 최저/최고 새벽/아침/낮/저녁/최대` + `\n🍖쩡햄Live`;
     
     cache.set(dateIso, {
       updated: Date.now(),
