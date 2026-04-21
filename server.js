@@ -327,7 +327,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
       //const warningLine = isDateSum18(dateIso) ? "\n💢 재난 사고 조심 💢\n" : "\n";
       //const text = `✨ ${datePretty}  0건` + warningLine + `\n해당 날짜에 일정이 없습니다.\n\n💫 ${formatKSTTime()} ✨신규 💢레드데이  @쩡햄Live`;
   
-      const warningLine = isDateSum18(dateIso) ? `💢 ${datePretty} 사고조심  0건` : `✨ ${datePretty}  0건`;
+      //const warningLine = isDateSum18(dateIso) ? `💢 ${datePretty} 사고조심  0건` : `✨ ${datePretty}  0건`;
+      const warningLine = isDateSum18(dateIso) ? `✨ ${datePretty} 💢사고조심  0건` : `✨ ${datePretty}  0건`;
   
       //const text = warningLine + `\n\n   - 해당 날짜에 일정이 없습니다. -\n\n💫${formatKSTTime()} ✨신규 💢레드데이  🍖쩡햄Live`;
       //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `💫${formatKSTTime()} ✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/저녁/최대량  🍖쩡햄Live`;
@@ -434,7 +435,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
     //const warningLine = isDateSum18(dateIso) ? "\n💢 재난 사고 조심 💢\n" : "\n";
     //const full = `✨ ${datePretty}  ${results.length}건` + warningLine + `\n${chunks.join("\n\n")}\n\n💫 ${updatedTime} ✨신규 💢레드데이  @쩡햄Live`;
   
-    const warningLine = isDateSum18(dateIso) ? `💢 ${datePretty} 사고조심  ${results.length}건` : `✨ ${datePretty}  ${results.length}건`;
+    //const warningLine = isDateSum18(dateIso) ? `💢 ${datePretty} 사고조심  ${results.length}건` : `✨ ${datePretty}  ${results.length}건`;
+    const warningLine = isDateSum18(dateIso) ? `✨ ${datePretty} 💢사고조심  ${results.length}건` : `✨ ${datePretty}  ${results.length}건`;
   
     //const full = warningLine + `\n\n${chunks.join("\n\n")}\n\n💫${updatedTime} ✨신규 💢레드데이  🍖쩡햄Live`;
     //const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `💫${updatedTime} ✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/저녁/최대량  🍖쩡햄Live`;
