@@ -161,13 +161,30 @@ async function fetchWeather(dateIso) {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&hourly=temperature_2m,precipitation_probability,precipitation,weathercode&timezone=Asia/Seoul`;
 
     const res = await fetch(url);
+    //const data = await res.json();
+
+    //const hours = data.hourly.time;
+    //const temps = data.hourly.temperature_2m;
+    //const pops = data.hourly.precipitation_probability;
+    //const precs = data.hourly.precipitation;
+    //const codes = data.hourly.weathercode;
+
     const data = await res.json();
 
-    const hours = data.hourly.time;
-    const temps = data.hourly.temperature_2m;
-    const pops = data.hourly.precipitation_probability;
-    const precs = data.hourly.precipitation;
-    const codes = data.hourly.weathercode;
+    const hourly = data?.hourly;
+    
+    if (!hourly) {
+      throw new Error("hourly 데이터 없음");
+    }
+    
+    const hours = hourly.time || [];
+    const temps = hourly.temperature_2m || [];
+    const pops = hourly.precipitation_probability || [];
+    const precs = hourly.precipitation || [];
+    const codes =
+      hourly.weathercode ||
+      hourly.weather_code ||
+      [];
 
     // 해당 날짜 필터
     const dayData = hours.map((t, i) => ({
