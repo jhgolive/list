@@ -276,7 +276,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
     }
 
     const weather = await fetchWeather(dateIso);
-    let weatherLine = "";
+    let weatherLine = "\n\n";
 
     if (weather) {
       //weatherLine =
