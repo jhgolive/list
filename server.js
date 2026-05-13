@@ -158,6 +158,12 @@ function isDateSum18(dateIso) {
 // =====================
 async function fetchWeather(dateIso) {
   try {
+    const cached = weatherCache.get(dateIso);
+    
+    if (cached && Date.now() - cached.time < 60 * 60 * 1000) {
+      return cached.data;
+    }
+    
     const url = `https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&hourly=temperature_2m,precipitation_probability,precipitation,weathercode&timezone=Asia/Seoul`;
 
     //const res = await fetch(url);
@@ -172,6 +178,14 @@ async function fetchWeather(dateIso) {
     const res = await fetch(url);
     
     if (!res.ok) {
+      //throw new Error(`HTTP ${res.status}`);
+
+      console.log("⚠️ 날씨 API 실패 → 이전 캐시 사용");
+    
+      if (cached) {
+        return cached.data;
+      }
+    
       throw new Error(`HTTP ${res.status}`);
     }
     
@@ -261,14 +275,29 @@ async function fetchWeather(dateIso) {
     const icons = chunks.map(getIcon);
     const pops4 = chunks.map(getPop);
 
-    return {
+    //return {
+      //min: Math.round(minTemp),
+      //max: Math.round(maxTemp),
+      //icons,
+      //pops: pops4,
+      //maxPrecip: Math.round(maxPrecip)
+    //};
+    
+    const result = {
       min: Math.round(minTemp),
       max: Math.round(maxTemp),
       icons,
       pops: pops4,
       maxPrecip: Math.round(maxPrecip)
     };
-
+    
+    weatherCache.set(dateIso, {
+      time: Date.now(),
+      data: result
+    });
+    
+    return result;
+    
   } catch (e) {
     console.error("❌ 날씨 가져오기 실패:", e.message);
     return null;
@@ -279,6 +308,7 @@ async function fetchWeather(dateIso) {
 // 캐시 저장소
 // =====================
 const cache = new Map();
+const weatherCache = new Map();
 
 // =====================
 // 일정 크롤링
