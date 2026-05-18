@@ -354,7 +354,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
         //`${weather.maxPrecip}mm\n\n`;
 
       function formatIconPop(icon, pop) {
-        return pop > 0 ? `${icon}${pop}%` : `${icon}`;
+        return pop > 4 ? `${icon}${pop}%` : `${icon}`;
       }
       
       weatherLine =
