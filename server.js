@@ -228,7 +228,9 @@ async function fetchWeather(dateIso) {
       code: codes[i]
     })).filter(v => v.time.startsWith(dateIso));
 
-    if (!dayData.length) return null;
+    if (!dayData.length) {
+      throw new Error("날짜 데이터 없음");
+    }
 
     // 🌡️ 최저/최고
     const minTemp = Math.min(...dayData.map(v => v.temp));
@@ -300,7 +302,21 @@ async function fetchWeather(dateIso) {
     
   } catch (e) {
     console.error("❌ 날씨 가져오기 실패:", e.message);
-    return null;
+  
+    const cached = weatherCache.get(dateIso);
+  
+    if (cached) {
+      console.log("♻️ 이전 날씨 캐시 사용");
+      return cached.data;
+    }
+  
+    return {
+      min: "-",
+      max: "-",
+      icons: ["⛅", "⛅", "⛅", "⛅"],
+      pops: [0, 0, 0, 0],
+      maxPrecip: 0
+    };
   }
 }
 
@@ -319,6 +335,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
     return;
   }
 
+  const oldCache = cache.get(dateIso);
+  
   fetching.set(dateIso, true);
 
   try {
@@ -461,7 +479,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
     // 목록 마지막 3개 NEW 아이콘 표시
     //const formatted = results.map((r, i) => `💥No${i + 1}${r.text.replace(/\n/g, "\n⚡")}`);
     const NEW_COUNT = 3;
-    const newOrders = results
+    //const newOrders = results
+    const newOrders = [...results]
       .sort((a, b) => b.order - a.order)
       .slice(0, NEW_COUNT)
       .map(r => r.order);
@@ -518,6 +537,13 @@ async function fetchEventsForDate(dateIso, datePretty) {
     });
   
     console.log(`✅ 캐시 완료: ${dateIso} (${results.length}건)`);
+  } catch (e) {
+    console.error(`❌ 일정 크롤링 실패 (${dateIso}):`, e.message);
+  
+    if (oldCache) {
+      console.log(`♻️ 이전 캐시 유지: ${dateIso}`);
+      cache.set(dateIso, oldCache);
+    }    
   } finally {
     fetching.delete(dateIso);
   }
@@ -609,8 +635,11 @@ app.get("/nightbot", async (req, res) => {
   }
 
   // 캐시에 없음 → 즉시 크롤링
+  const before = cache.get(dateIso);
+  
   await fetchEventsForDate(dateIso, dateStr);
-  const newData = cache.get(dateIso);
+  
+  const newData = cache.get(dateIso) || before;
   return res.type("text/plain").send(newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`);
 });
 
