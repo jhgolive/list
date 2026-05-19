@@ -341,22 +341,22 @@ async function fetchEventsForDate(dateIso, datePretty) {
 
   try {
     console.log(`📅 크롤링: ${dateIso}`);
-    let browser = await getBrowser();
+    let currentBrowser = await getBrowser();
     let page;
     
     try {
-      page = await browser.newPage();
+      page = await currentBrowser.newPage();
     } catch (e) {
       console.log("💥 newPage 실패 → 브라우저 재시작");
     
-      if (browser) {
-        try { await browser.close(); } catch {}
+      if (currentBrowser) {
+        try { await currentBrowser.close(); } catch {}
       }
     
-      browser = null; // 💥 핵심
+      currentBrowser = null; // 💥 핵심
     
-      browser = await getBrowser();
-      page = await browser.newPage();
+      currentBrowser = await getBrowser();
+      page = await currentBrowser.newPage();
     }
 
     const weather = await fetchWeather(dateIso);
@@ -426,7 +426,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
     const results = [];
 
     for (const { href, order } of links) {
-      const detail = await browser.newPage();
+      const detail = await currentBrowser.newPage();
       try {
         await detail.goto(href, { waitUntil: "networkidle2", timeout: 60000 });
     
@@ -535,7 +535,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
       chunks,
       count: results.length,
     });
-  
+
+    console.log(`📦 ${dateIso} 저장 여부:`, cache.has(dateIso));
     console.log(`✅ 캐시 완료: ${dateIso} (${results.length}건)`);
   } catch (e) {
     console.error(`❌ 일정 크롤링 실패 (${dateIso}):`, e.message);
