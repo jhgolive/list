@@ -39,7 +39,14 @@ const PUPPETEER_OPTIONS = {
     "--disable-dev-shm-usage",
     "--disable-gpu",
     "--no-first-run",
-    "--no-zygote"
+    "--no-zygote",
+  
+    "--single-process",
+    "--disable-extensions",
+    "--disable-background-networking",
+    "--disable-background-timer-throttling",
+    "--disable-renderer-backgrounding",
+    "--mute-audio"
   ]
 };
 
@@ -386,7 +393,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
     
     //const url = `https://kukmin.libertysocial.co.kr/assembly?date=${encodeURIComponent(dateIso)}`;
     const url = `https://kukmin.libertysocial.co.kr/assembly?tab=calendar&date=${encodeURIComponent(dateIso)}`;
-    await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
+    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
   
     const links = await page.evaluate(() =>
       Array.from(document.querySelectorAll("a[href*='/assembly/']"))
@@ -425,10 +432,10 @@ async function fetchEventsForDate(dateIso, datePretty) {
   
     const results = [];
 
+    const detail = await currentBrowser.newPage();
     for (const { href, order } of links) {
-      const detail = await currentBrowser.newPage();
       try {
-        await detail.goto(href, { waitUntil: "networkidle2", timeout: 60000 });
+        await detail.goto(href, { waitUntil: "domcontentloaded", timeout: 60000 });
     
         const event = await detail.evaluate(() => {
           const title = document.querySelector("header.flex.justify-between h1.line-clamp-2")?.innerText.trim();
@@ -463,15 +470,17 @@ async function fetchEventsForDate(dateIso, datePretty) {
             order, // 🔥 등록 순서
           });
         }
-      } finally {
-          try {
-            if (!detail.isClosed()) {
-              await detail.close();
-            }
-          } catch (e) {
-            console.log("⚠️ 페이지 close 중 에러 무시:", e.message);
-          }
-        }
+      } catch (e) {
+        console.log("⚠️ 상세 페이지 실패:", href);
+      }
+    }
+
+    try {
+      if (!detail.isClosed()) {
+        await detail.close();
+      }
+    } catch (e) {
+      console.log("⚠️ detail close 실패:", e.message);
     }
   
     results.sort((a, b) => (a.start - b.start) || (a.end - b.end));
@@ -579,6 +588,15 @@ async function refreshCache() {
     }
 
     console.log("✅ 캐시 갱신 완료");
+    
+    if (browser) {
+      try {
+        await browser.close();
+      } catch {}
+    
+      browser = null;
+      console.log("🧹 브라우저 메모리 정리");
+    }
   } finally {
     isRefreshing = false;
   }
