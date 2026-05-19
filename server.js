@@ -41,12 +41,14 @@ const PUPPETEER_OPTIONS = {
     "--no-first-run",
     "--no-zygote",
   
-    "--single-process",
+    //"--single-process",
     "--disable-extensions",
     "--disable-background-networking",
     "--disable-background-timer-throttling",
     "--disable-renderer-backgrounding",
-    "--mute-audio"
+    "--mute-audio",
+    "--disable-features=site-per-process",
+    "--memory-pressure-off"
   ]
 };
 
@@ -393,7 +395,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
     
     //const url = `https://kukmin.libertysocial.co.kr/assembly?date=${encodeURIComponent(dateIso)}`;
     const url = `https://kukmin.libertysocial.co.kr/assembly?tab=calendar&date=${encodeURIComponent(dateIso)}`;
-    await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
+    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
   
     const links = await page.evaluate(() =>
       Array.from(document.querySelectorAll("a[href*='/assembly/']"))
@@ -435,7 +437,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
     const detail = await currentBrowser.newPage();
     for (const { href, order } of links) {
       try {
-        await detail.goto(href, { waitUntil: "networkidle2", timeout: 60000 });
+        await detail.goto(href, { waitUntil: "domcontentloaded", timeout: 60000 });
     
         const event = await detail.evaluate(() => {
           const title = document.querySelector("header.flex.justify-between h1.line-clamp-2")?.innerText.trim();
