@@ -636,7 +636,8 @@ app.get("/nightbot", async (req, res) => {
     if (!part) return res.type("text/html").send(`<pre>${cached.full}</pre>`);
     
     const chunk = cached.chunks[part - 1];
-    if (!chunk) return res.type("text/plain").send("");
+    //if (!chunk) return res.type("text/plain").send("");
+    if (!chunk) return res.type("text/html").send("");
 
     let out = "";
     if (part === 1) out += `✨ ${dateStr}  ${cached.count}건\n\n`;
@@ -655,7 +656,8 @@ app.get("/nightbot", async (req, res) => {
       out += `\n\n💫 ${m}-${d} ${hh}:${mm}`;  // 연도 제거
     }
 
-    return res.type("text/plain").send(out);
+    //return res.type("text/plain").send(out);
+    return res.type("text/html").send(`<pre>${out}</pre>`);
   }
 
   // 캐시에 없음 → 즉시 크롤링
