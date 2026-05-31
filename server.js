@@ -632,7 +632,7 @@ app.get("/nightbot", async (req, res) => {
 
   if (cached) {
     //if (!part) return res.type("text/plain").send(cached.full);
-    if (!part) return res.type("text/html").send(cached.full);
+    if (!part) return res.type("text/html").send(cached.full.replace(/\n/g, "<br>"));
 
     const chunk = cached.chunks[part - 1];
     if (!chunk) return res.type("text/plain").send("");
@@ -664,7 +664,7 @@ app.get("/nightbot", async (req, res) => {
   
   const newData = cache.get(dateIso) || before;
   //return res.type("text/plain").send(newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`);
-  return res.type("text/html").send(newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`);
+  return res.type("text/html").send((newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`).replace(/\n/g, "<br>"));
 });
 
 // =====================
