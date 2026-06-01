@@ -535,30 +535,44 @@ async function fetchEventsForDate(dateIso, datePretty) {
       const lines = r.text.split("\n");
     
       // 첫 줄 (제목)
-      //let text = lines[0];
+      let text = lines[0];
     
       // 나머지 줄
       //const rest = lines.slice(1).map(line => `⚡${line}`).join("\n");
 
-      // 제목: ':' 뒤만 굵게
-      let text = lines[0].replace(
-        /^([^:]+:\s*)(.*)$/,
-        '$1<b>$2</b>'
-      );
-      
-      // 나머지 줄
+      // 시간 값 색상
       const rest = lines.slice(1).map(line => {
       
-        // 시간: 값만 굵게
         if (line.startsWith("시간:")) {
           return `⚡${line.replace(
-            /^시간:\s*(.*)$/,
-            '시간: <b>$1</b>'
+            /^시간:\s*(\d{2}:\d{2})\s*~\s*(\d{2}:\d{2})$/,
+            '시간: <span style="color:red;">$1</span> ~ <span style="color:red;">$2</span>'
           )}`;
         }
       
         return `⚡${line}`;
+      
       }).join("\n");
+      
+      // 제목: ':' 뒤만 굵게
+      //let text = lines[0].replace(
+      //  /^([^:]+:\s*)(.*)$/,
+      //  '$1<b>$2</b>'
+      //);
+      
+      // 나머지 줄
+      //const rest = lines.slice(1).map(line => {
+      
+        // 시간: 값만 굵게
+        //if (line.startsWith("시간:")) {
+        //  return `⚡${line.replace(
+        //    /^시간:\s*(.*)$/,
+        //    '시간: <b>$1</b>'
+        //  )}`;
+        //}
+      
+        //return `⚡${line}`;
+      //}).join("\n");
       
       if (isNew) {
         text += `✨\n${rest}`;
