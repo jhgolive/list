@@ -330,6 +330,21 @@ async function fetchWeather(dateIso) {
 }
 
 // =====================
+// 날짜 클릭
+// =====================
+function getNextCachedDate(currentDateIso) {
+  const dates = [...cache.keys()].sort();
+
+  if (!dates.length) return currentDateIso;
+
+  const idx = dates.indexOf(currentDateIso);
+
+  if (idx === -1) return dates[0];
+
+  return dates[(idx + 1) % dates.length];
+}
+
+// =====================
 // 캐시 저장소
 // =====================
 const cache = new Map();
@@ -633,7 +648,30 @@ app.get("/nightbot", async (req, res) => {
   if (cached) {
     //if (!part) return res.type("text/plain").send(cached.full);
     //if (!part) return res.type("text/html").send(cached.full.replace(/\n/g, "<br>"));
-    if (!part) return res.type("text/html").send(`<pre>${cached.full}</pre>`);
+    //if (!part) return res.type("text/html").send(`<pre>${cached.full}</pre>`);
+    if (!part) {
+      const nextDate = getNextCachedDate(dateIso);
+      const nextMMDD = nextDate.slice(5).replace("-", "");
+    
+      const lines = cached.full.split("\n");
+      const header = lines.shift();
+      const body = lines.join("\n");
+    
+      // 날짜 부분만 추출
+      const linkedHeader = header.replace(
+        /(\d{4}년 \d{2}월 \d{2}일 \([^)]+\))/,
+        `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:none;">$1</a>`
+      );
+    
+      return res.type("text/html").send(`
+        <html>
+          <body>
+            <pre>${linkedHeader}
+    ${body}</pre>
+          </body>
+        </html>
+      `);
+    }
     
     const chunk = cached.chunks[part - 1];
     //if (!chunk) return res.type("text/plain").send("");
