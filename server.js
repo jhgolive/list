@@ -535,11 +535,40 @@ async function fetchEventsForDate(dateIso, datePretty) {
       const lines = r.text.split("\n");
     
       // 첫 줄 (제목)
-      let text = lines[0];
+      //let text = lines[0];
     
       // 나머지 줄
-      const rest = lines.slice(1).map(line => `⚡${line}`).join("\n");
-    
+      //const rest = lines.slice(1).map(line => `⚡${line}`).join("\n");
+
+      // 제목: ':' 뒤만 굵게 ✨빼고
+      let text = lines[0];
+      
+      if (text.endsWith("✨")) {
+        text = text.replace(
+          /^(:\s*)(.*)✨$/,
+          '$1<b>$2</b>✨'
+        );
+      } else {
+        text = text.replace(
+          /^(:\s*)(.*)$/,
+          '$1<b>$2</b>'
+        );
+      }
+
+      // 나머지 줄
+      const rest = lines.slice(1).map(line => {
+      
+        // 시간: 값만 굵게
+        if (line.startsWith("시간:")) {
+          return `⚡${line.replace(
+            /^시간:\s*(.*)$/,
+            '시간: <b>$1</b>'
+          )}`;
+        }
+      
+        return `⚡${line}`;
+      }).join("\n");
+      
       if (isNew) {
         text += `✨\n${rest}`;
       } else {
@@ -680,7 +709,7 @@ app.get("/nightbot", async (req, res) => {
       // 날짜 부분만 추출
       const linkedHeader = header.replace(
         /(\d{4}년 \d{2}월 \d{2}일 \([^)]+\))/,
-        `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:underline;">$1</a>`
+        `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:underline;font-weight:bold;">$1</a>`
       );
     
 return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1"><pre>${linkedHeader}
