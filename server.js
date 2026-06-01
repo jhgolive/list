@@ -581,7 +581,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
       }
     
       //return `💥No${i + 1}${text}`;
-      return `💥No<span style="color:red;">${i + 1}</span>${text}`;
+      return `💥No<span style="color:blue;">${i + 1}</span>${text}`;
     });
     
     const chunks = splitByEvents(formatted, 1);
@@ -721,9 +721,8 @@ app.get("/nightbot", async (req, res) => {
       // 날짜 부분만 추출, 색상
       const linkedHeader = header.replace(
         /(\d{4})년 (\d{2})월 (\d{2})일 \(([^)]+)\)/,
-        `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:underline;"><span style="color:red;">$1</span>년 <span style="color:red;">$2</span>월 <span style="color:red;">$3</span>일 (<span style="color:red;">$4</span>)</a>`);
-        //font-weight:bold;
-      
+        `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:underline;"><span style="color:red;font-weight:bold;">$1</span>년 <span style="color:red;font-weight:bold;">$2</span>월 <span style="color:red;font-weight:bold;">$3</span>일 (<span style="color:red;font-weight:bold;">$4</span>)</a>`);
+            
 return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1"><pre>${linkedHeader}
 ${body}</pre>`);
     }
