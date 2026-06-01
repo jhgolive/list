@@ -593,7 +593,7 @@ async function refreshCache() {
   isRefreshing = true;
 
   try {
-    console.log("♻️ 2일치 캐시 갱신 시작");
+    console.log("♻️ 7일치 캐시 갱신 시작");
 
     const today = getKSTDate();
     today.setHours(0, 0, 0, 0);
