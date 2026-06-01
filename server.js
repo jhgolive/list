@@ -540,21 +540,12 @@ async function fetchEventsForDate(dateIso, datePretty) {
       // 나머지 줄
       //const rest = lines.slice(1).map(line => `⚡${line}`).join("\n");
 
-      // 제목: ':' 뒤만 굵게 ✨빼고
-      let text = lines[0];
+      // 제목: ':' 뒤만 굵게
+      let text = lines[0].replace(
+        /^([^:]+:\s*)(.*)$/,
+        '$1<b>$2</b>'
+      );
       
-      if (text.endsWith("✨")) {
-        text = text.replace(
-          /^(:\s*)(.*)✨$/,
-          '$1<b>$2</b>✨'
-        );
-      } else {
-        text = text.replace(
-          /^(:\s*)(.*)$/,
-          '$1<b>$2</b>'
-        );
-      }
-
       // 나머지 줄
       const rest = lines.slice(1).map(line => {
       
