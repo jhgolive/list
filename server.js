@@ -441,8 +441,9 @@ async function fetchEventsForDate(dateIso, datePretty) {
       //const text = warningLine + `\n\n   - 해당 날짜에 일정이 없습니다. -\n\n💫${formatKSTTime()} ✨신규 💢레드데이  🍖쩡햄Live`;
       //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `💫${formatKSTTime()} ✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/저녁/최대량  🍖쩡햄Live`;
       //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨서울 최저/최고 새벽/아침/낮/저녁/최대량` + `\n✨신규 💢레드데이 💫${formatKSTTime()}  🍖쩡햄Live`;
-      const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} 🍖쩡햄Live`;
-      
+      //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} 🍖쩡햄Live`;
+      const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} <a href="https://www.youtube.com/@쩡햄Live" target="_blank" style="color:inherit;text-decoration:none;">🍖쩡햄Live</a>`;
+
       cache.set(dateIso, { updated: Date.now(), full: text, chunks: [text], count: 0 });
       return;
     }
@@ -554,7 +555,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
     //const full = warningLine + `\n\n${chunks.join("\n\n")}\n\n💫${updatedTime} ✨신규 💢레드데이  🍖쩡햄Live`;
     //const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `💫${updatedTime} ✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/저녁/최대량  🍖쩡햄Live`;
     //const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨서울 최저/최고 새벽/아침/낮/저녁/최대량` + `\n✨신규 💢레드데이 💫${updatedTime}  🍖쩡햄Live`;
-    const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${updatedTime} 🍖쩡햄Live`;
+    //const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${updatedTime} 🍖쩡햄Live`;
+    const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${updatedTime} <a href="https://www.youtube.com/@쩡햄Live" target="_blank" style="color:inherit;text-decoration:none;">🍖쩡햄Live</a>`;
     
     cache.set(dateIso, {
       updated: Date.now(),
