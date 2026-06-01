@@ -596,7 +596,8 @@ async function refreshCache() {
     const today = getKSTDate();
     today.setHours(0, 0, 0, 0);
 
-    for (let i = 0; i < 2; i++) {
+    //몇일치
+    for (let i = 0; i < 7; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       const iso = formatYYYYMMDD(date);
@@ -663,8 +664,8 @@ app.get("/nightbot", async (req, res) => {
         `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:underline;">$1</a>`
       );
     
-      return res.type("text/html").send(`<pre>${linkedHeader}
-      ${body}</pre>`);
+return res.type("text/html").send(`<pre>${linkedHeader}
+${body}</pre>`);
     }
     
     const chunk = cached.chunks[part - 1];
