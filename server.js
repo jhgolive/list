@@ -673,7 +673,7 @@ app.get("/nightbot", async (req, res) => {
         `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:underline;">$1</a>`
       );
     
-return res.type("text/html").send(`<pre>${linkedHeader}
+return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1"><pre>${linkedHeader}
 ${body}</pre>`);
     }
     
@@ -699,7 +699,7 @@ ${body}</pre>`);
     }
 
     //return res.type("text/plain").send(out);
-    return res.type("text/html").send(`<pre>${out}</pre>`);
+    return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1"><pre>${out}</pre>`);
   }
 
   // 캐시에 없음 → 즉시 크롤링
@@ -710,7 +710,7 @@ ${body}</pre>`);
   const newData = cache.get(dateIso) || before;
   //return res.type("text/plain").send(newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`);
   //return res.type("text/html").send((newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`).replace(/\n/g, "<br>"));
-  return res.type("text/html").send(`<pre>${newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`}</pre>`);
+  return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1"><pre>${newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`}</pre>`);
 });
 
 // =====================
