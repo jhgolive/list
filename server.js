@@ -660,17 +660,11 @@ app.get("/nightbot", async (req, res) => {
       // 날짜 부분만 추출
       const linkedHeader = header.replace(
         /(\d{4}년 \d{2}월 \d{2}일 \([^)]+\))/,
-        `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:none;">$1</a>`
+        `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:underline;">$1</a>`
       );
     
-      return res.type("text/html").send(`
-        <html>
-          <body>
-            <pre>${linkedHeader}
-    ${body}</pre>
-          </body>
-        </html>
-      `);
+      return res.type("text/html").send(`<pre>${linkedHeader}
+      ${body}</pre>`);
     }
     
     const chunk = cached.chunks[part - 1];
