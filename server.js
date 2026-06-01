@@ -517,6 +517,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
       console.log(
         `♻️ 모든 상세페이지 실패 → 기존 캐시 유지: ${dateIso} (링크 ${links.length}개)`
       );
+      cache.set(dateIso, oldCache);
       return;
     }
     
@@ -604,6 +605,7 @@ async function refreshCache() {
 
     const today = getKSTDate();
     today.setHours(0, 0, 0, 0);
+    const validDates = new Set();
 
     //몇일치
     for (let i = 0; i < 7; i++) {
@@ -612,9 +614,17 @@ async function refreshCache() {
       const iso = formatYYYYMMDD(date);
       const pretty = formatKoreanDate(date);
 
+      validDates.add(iso);
       await fetchEventsForDate(iso, pretty);
     }
 
+    // 🔥 7일 밖 캐시 삭제
+    for (const key of cache.keys()) {
+      if (!validDates.has(key)) {
+        cache.delete(key);
+      }
+    }
+    
     console.log("✅ 캐시 갱신 완료");
     
     if (browser) {
