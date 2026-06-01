@@ -712,9 +712,20 @@ app.get("/nightbot", async (req, res) => {
       const body = lines.join("\n");
     
       // 날짜 부분만 추출
+      //const linkedHeader = header.replace(
+      //  /(\d{4}년 \d{2}월 \d{2}일 \([^)]+\))/,
+      //  `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:underline;font-weight:bold;">$1</a>`
+      //);
+
+      // 날짜 부분만 추출, 색상
       const linkedHeader = header.replace(
-        /(\d{4}년 \d{2}월 \d{2}일 \([^)]+\))/,
-        `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:underline;font-weight:bold;">$1</a>`
+        /(\d{4})년 (\d{2})월 (\d{2})일 \(([^)]+)\)/,
+        `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:underline;font-weight:bold;">
+          <span style="color:red;">$1</span>년
+          <span style="color:red;">$2</span>월
+          <span style="color:red;">$3</span>일
+          (<span style="color:red;">$4</span>)
+        </a>`
       );
     
 return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1"><pre>${linkedHeader}
