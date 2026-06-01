@@ -443,6 +443,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
       //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨서울 최저/최고 새벽/아침/낮/저녁/최대량` + `\n✨신규 💢레드데이 💫${formatKSTTime()}  🍖쩡햄Live`;
       //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} 🍖쩡햄Live`;
       const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} <a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:none;">🍖쩡햄<span style="color:red;">L</span>ive</a>`;
+      //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨날짜클릭:7일캐싱 💢레드데이 ✨신규` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} <a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:none;">🍖쩡햄<span style="color:red;">L</span>ive</a>`;
       
       cache.set(dateIso, { updated: Date.now(), full: text, chunks: [text], count: 0 });
       return;
