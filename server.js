@@ -443,7 +443,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
       //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨서울 최저/최고 새벽/아침/낮/저녁/최대량` + `\n✨신규 💢레드데이 💫${formatKSTTime()}  🍖쩡햄Live`;
       //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} 🍖쩡햄Live`;
       const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} <a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:none;">🍖쩡햄Live</a>`;
-
+      
       cache.set(dateIso, { updated: Date.now(), full: text, chunks: [text], count: 0 });
       return;
     }
@@ -502,7 +502,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
       console.log("⚠️ detail close 실패:", e.message);
     }
   
-    results.sort((a, b) => (a.start - b.start) || (a.end - b.end));
+    //results.sort((a, b) => (a.start - b.start) || (a.end - b.end));
   
     // 목록 마지막 3개 NEW 아이콘 표시
     //const formatted = results.map((r, i) => `💥No${i + 1}${r.text.replace(/\n/g, "\n⚡")}`);
@@ -512,6 +512,13 @@ async function fetchEventsForDate(dateIso, datePretty) {
       .sort((a, b) => b.order - a.order)
       .slice(0, NEW_COUNT)
       .map(r => r.order);
+    
+    if (results.length === 0 && oldCache) {
+      console.log(
+        `♻️ 모든 상세페이지 실패 → 기존 캐시 유지: ${dateIso} (링크 ${links.length}개)`
+      );
+      return;
+    }
     
     results.sort((a, b) => (a.start - b.start) || (a.end - b.end));
   
