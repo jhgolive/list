@@ -57,7 +57,7 @@ const PUPPETEER_OPTIONS = {
 // =====================
 let browser;
 async function getBrowser() {
-  if (!browser || !browser.connected === false) {
+  if (!browser || !browser.isConnected?.()) {
     console.log("♻️ 브라우저 재시작...");
     try {
       browser = await puppeteer.launch(PUPPETEER_OPTIONS);
