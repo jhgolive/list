@@ -377,7 +377,6 @@ async function fetchEventsForDate(dateIso, datePretty) {
         try { await currentBrowser.close(); } catch {}
       }
 
-      browser = null;
       currentBrowser = null; // 💥 핵심
     
       currentBrowser = await getBrowser();
@@ -583,7 +582,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
       }
     
       //return `💥No${i + 1}${text}`;
-      return `💥No<span style="color:darkred;">${i + 1}</span>${text}`;
+      return `💥No<span style="color:darkred;font-weight:bold;">${i + 1}</span>${text}`;
     });
     
     const chunks = splitByEvents(formatted, 1);
@@ -663,6 +662,14 @@ async function refreshCache() {
     }
     
     console.log("✅ 캐시 갱신 완료");
+    if (browser) {
+      try {
+        await browser.close();
+      } catch {}
+    
+      browser = null;
+      console.log("🧹 브라우저 메모리 정리");
+    }
   } finally {
     isRefreshing = false;
   }
