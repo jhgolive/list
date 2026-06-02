@@ -583,7 +583,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
       }
     
       //return `💥No${i + 1}${text}`;
-      return `💥No<span style="color:navy;">${i + 1}</span>${text}`;
+      return `💥No<span style="color:darkred;">${i + 1}</span>${text}`;
     });
     
     const chunks = splitByEvents(formatted, 1);
