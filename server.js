@@ -680,7 +680,8 @@ refreshCache();
 // =====================
 // /nightbot
 // =====================
-app.get("/nightbot", async (req, res) => {
+//app.get("/nightbot", async (req, res) => {
+app.get(["/", "/nightbot"], async (req, res) => {
   let dateInput = req.query.q || req.query.query || req.query.text || req.query.date || "";
   dateInput = decodeURIComponent(dateInput).trim();
 
