@@ -581,7 +581,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
         text += `\n${rest}`;
       }
     
-      //return `💥No${i + 1}${text}`;
+      //return `💥No${i + 1}${text}`; 번호
       return `💥No<span style="color:red;font-weight:bold;">${i + 1}</span>${text}`;
     });
     
