@@ -730,6 +730,9 @@ refreshCache();
 // =====================
 //app.get("/nightbot", async (req, res) => {
 app.get(["/", "/nightbot"], async (req, res) => {
+  
+  if (req.path === "/favicon.ico") return res.sendStatus(204);
+  
   resetDailyStats();
     
   const ip =
@@ -737,6 +740,11 @@ app.get(["/", "/nightbot"], async (req, res) => {
     req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
     req.socket.remoteAddress ||
     "unknown";
+
+  if (req.path === "/" || req.path === "/nightbot") {
+    dailyStats.views++;
+    dailyStats.visitors.add(ip);
+  }
   
   dailyStats.views++;
   dailyStats.visitors.add(ip);
@@ -814,7 +822,7 @@ ${body}</pre>
 <hr>
 
 <pre style="text-align:left;">
-오늘 방문자 ${dailyStats.visitors.size}   조회수 ${dailyStats.views}   <span id="heart">${heart}</span><span id="likeCount"> ${dailyStats.likes}</span>
+오늘 방문자 ${dailyStats.visitors.size}   조회수 ${dailyStats.views}   <span id="heart">${heart}</span> <span id="likeCount">${dailyStats.likes}</span>
 </pre>
 
 <script>
@@ -826,7 +834,8 @@ async function like() {
   const count = document.getElementById('likeCount');
 
   // 하트 변경
-  heart.innerHTML = "❤️";
+  //heart.innerHTML = "❤️";
+  heart.innerHTML = "♡";
   heart.style.color = "red";
 
   // 숫자 변경
