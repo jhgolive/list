@@ -359,13 +359,40 @@ function copyAccountNumber() {
 }
 
 // =====================
-// 방문자 조회수
+// 방문자 조회수 Cloudflare
 // =====================
 function analyticsScript() {
   return `
 <!-- Cloudflare Web Analytics -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "230c2a84dbfe44ed94753e7a1fb00c4b"}'></script>
 <!-- End Cloudflare Web Analytics -->`;
+}
+
+// =====================
+// 오늘 방문자/조회수/좋아요
+// =====================
+const dailyStats = {
+  date: "",
+  visitors: new Set(),
+  likedIPs: new Set(),
+  views: 0,
+  likes: 0
+};
+
+function getTodayKST() {
+  return formatYYYYMMDD();
+}
+
+function resetDailyStats() {
+  const today = getTodayKST();
+
+  if (dailyStats.date !== today) {
+    dailyStats.date = today;
+    dailyStats.visitors = new Set();
+    dailyStats.likedIPs = new Set();
+    dailyStats.views = 0;
+    dailyStats.likes = 0;
+  }
 }
 
 // =====================
@@ -713,6 +740,17 @@ refreshCache();
 // =====================
 //app.get("/nightbot", async (req, res) => {
 app.get(["/", "/nightbot"], async (req, res) => {
+  resetDailyStats();
+  
+  const ip =
+    req.headers["cf-connecting-ip"] ||
+    req.headers["x-forwarded-for"] ||
+    req.socket.remoteAddress ||
+    "unknown";
+  
+  dailyStats.views++;
+  dailyStats.visitors.add(ip);
+  
   let dateInput = req.query.q || req.query.query || req.query.text || req.query.date || "";
   dateInput = decodeURIComponent(dateInput).trim();
 
@@ -775,7 +813,22 @@ app.get(["/", "/nightbot"], async (req, res) => {
         `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:underline;"><span style="color:red;font-weight:bold;">$1</span>년 <span style="color:red;font-weight:bold;">$2</span>월 <span style="color:red;font-weight:bold;">$3</span>일 (<span style="color:red;font-weight:bold;">$4</span>)</a>`);
             
 return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1">${analyticsScript()}${copyAccount()}<pre>${linkedHeader}
-${body}</pre>`);
+${body}</pre>
+
+<hr>
+
+<pre style="text-align:center;">
+오늘 방문자 ${dailyStats.visitors.size}  오늘 조회수 ${dailyStats.views}  <a href="#" onclick="like();return false;">❤️ ${dailyStats.likes}</a>
+</pre>
+
+<script>
+async function like() {
+  const r = await fetch('/like');
+  const d = await r.json();
+  location.reload();
+}
+</script>
+`);
     }
     
     const chunk = cached.chunks[part - 1];
@@ -817,4 +870,22 @@ ${body}</pre>`);
 // =====================
 // 서버 시작
 // =====================
+app.get("/like", (req, res) => {
+  resetDailyStats();
+
+  const ip =
+    req.headers["cf-connecting-ip"] ||
+    req.headers["x-forwarded-for"] ||
+    req.socket.remoteAddress ||
+    "unknown";
+
+  if (!dailyStats.likedIPs.has(ip)) {
+    dailyStats.likedIPs.add(ip);
+    dailyStats.likes++;
+  }
+
+  res.json({
+    likes: dailyStats.likes
+  });
+});
 app.listen(PORT, () => console.log(`✅ Server running on ${PORT}`));
