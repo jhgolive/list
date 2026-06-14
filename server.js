@@ -359,16 +359,6 @@ function copyAccountNumber() {
 }
 
 // =====================
-// 방문자 조회수 Cloudflare
-// =====================
-function analyticsScript() {
-  return `
-<!-- Cloudflare Web Analytics -->
-<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "230c2a84dbfe44ed94753e7a1fb00c4b"}'></script>
-<!-- End Cloudflare Web Analytics -->`;
-}
-
-// =====================
 // 오늘 방문자/조회수/좋아요
 // =====================
 const dailyStats = {
@@ -772,7 +762,7 @@ app.get(["/", "/nightbot"], async (req, res) => {
   // 과거 날짜 차단
   if (targetDate < today) {
     return res.type("text/html").send(`
-    <meta name="viewport" content="width=device-width, initial-scale=1">${analyticsScript()}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <pre>지난 날짜는 조회할 수 없습니다.
     
@@ -800,6 +790,12 @@ app.get(["/", "/nightbot"], async (req, res) => {
       const lines = cached.full.split("\n");
       const header = lines.shift();
       const body = lines.join("\n");
+
+      const liked = dailyStats.likedIPs.has(ip);
+      
+      const heart = liked
+        ? `<a href="#" style="text-decoration:none;color:red;">❤️</a>`
+        : `<a href="#" onclick="like();return false;" style="text-decoration:none;color:gray;">🤍</a>`;
     
       // 날짜 부분만 추출
       //const linkedHeader = header.replace(
@@ -812,20 +808,29 @@ app.get(["/", "/nightbot"], async (req, res) => {
         /(\d{4})년 (\d{2})월 (\d{2})일 \(([^)]+)\)/,
         `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:underline;"><span style="color:red;font-weight:bold;">$1</span>년 <span style="color:red;font-weight:bold;">$2</span>월 <span style="color:red;font-weight:bold;">$3</span>일 (<span style="color:red;font-weight:bold;">$4</span>)</a>`);
             
-return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1">${analyticsScript()}${copyAccount()}<pre>${linkedHeader}
+return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1">${copyAccount()}<pre>${linkedHeader}
 ${body}</pre>
 
 <hr>
 
 <pre style="text-align:left;">
-오늘 방문자 ${dailyStats.visitors.size}   조회수 ${dailyStats.views}   <a href="#" onclick="like();return false;" style="text-decoration:none;">❤️</a> ${dailyStats.likes}
+오늘 방문자 ${dailyStats.visitors.size}   조회수 ${dailyStats.views}   <span id="heart">${heart}</span><span id="likeCount"> ${dailyStats.likes}</span>
 </pre>
 
 <script>
 async function like() {
   const r = await fetch('/like');
   const d = await r.json();
-  location.reload();
+
+  const heart = document.getElementById('heart');
+  const count = document.getElementById('likeCount');
+
+  // 하트 변경
+  heart.innerHTML = "❤️";
+  heart.style.color = "red";
+
+  // 숫자 변경
+  count.innerText = d.likes;
 }
 </script>
 `);
@@ -853,7 +858,7 @@ async function like() {
     }
 
     //return res.type("text/plain").send(out);
-    return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1">${analyticsScript()}<pre>${out}</pre>`);
+    return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1"><pre>${out}</pre>`);
   }
 
   // 캐시에 없음 → 즉시 크롤링
@@ -864,7 +869,7 @@ async function like() {
   const newData = cache.get(dateIso) || before;
   //return res.type("text/plain").send(newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`);
   //return res.type("text/html").send((newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`).replace(/\n/g, "<br>"));
-  return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1">${analyticsScript()}<pre>${newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`}</pre>`);
+  return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1"><pre>${newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`}</pre>`);
 });
 
 // =====================
