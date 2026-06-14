@@ -741,13 +741,13 @@ app.get(["/", "/nightbot"], async (req, res) => {
     req.socket.remoteAddress ||
     "unknown";
 
-  if (req.path === "/" || req.path === "/nightbot") {
+  const isHtmlRequest =
+  req.headers.accept?.includes("text/html");
+
+  if (isHtmlRequest && (req.path === "/" || req.path === "/nightbot")) {
     dailyStats.views++;
     dailyStats.visitors.add(ip);
   }
-  
-  dailyStats.views++;
-  dailyStats.visitors.add(ip);
   
   let dateInput = req.query.q || req.query.query || req.query.text || req.query.date || "";
   dateInput = decodeURIComponent(dateInput).trim();
@@ -822,7 +822,7 @@ ${body}</pre>
 <hr>
 
 <pre style="text-align:left;">
-오늘 방문자 ${dailyStats.visitors.size}   조회수 ${dailyStats.views}   <span id="heart">${heart}</span> <span id="likeCount">${dailyStats.likes}</span>
+오늘 방문자 ${dailyStats.visitors.size}  조회수 ${dailyStats.views}  <span id="heart">${heart}</span> <span id="likeCount">${dailyStats.likes}</span>
 </pre>
 
 <script>
@@ -834,8 +834,7 @@ async function like() {
   const count = document.getElementById('likeCount');
 
   // 하트 변경
-  //heart.innerHTML = "❤️";
-  heart.innerHTML = "♡";
+  heart.innerHTML = "❤️";
   heart.style.color = "red";
 
   // 숫자 변경
