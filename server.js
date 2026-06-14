@@ -803,7 +803,7 @@ app.get(["/", "/nightbot"], async (req, res) => {
       
       const heart = liked
         ? `<a href="#" style="text-decoration:none;color:red;">❤️</a>`
-        : `<a href="#" onclick="like();return false;" style="text-decoration:none;color:gray;">♡</a>`;
+        : `<a href="#" onclick="like();return false;" style="text-decoration:none;font-weight:bold;font-size:18px;">♡</a>`;
     
       // 날짜 부분만 추출
       //const linkedHeader = header.replace(
