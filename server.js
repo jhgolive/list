@@ -741,10 +741,10 @@ refreshCache();
 //app.get("/nightbot", async (req, res) => {
 app.get(["/", "/nightbot"], async (req, res) => {
   resetDailyStats();
-  
+    
   const ip =
     req.headers["cf-connecting-ip"] ||
-    req.headers["x-forwarded-for"] ||
+    req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
     req.socket.remoteAddress ||
     "unknown";
   
@@ -875,7 +875,7 @@ app.get("/like", (req, res) => {
 
   const ip =
     req.headers["cf-connecting-ip"] ||
-    req.headers["x-forwarded-for"] ||
+    req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
     req.socket.remoteAddress ||
     "unknown";
 
