@@ -692,6 +692,27 @@ app.get(["/", "/nightbot"], async (req, res) => {
 
   const { pretty: dateStr, iso: dateIso } = dateInfo;
 
+  // 오늘 00:00 기준
+  const now = new Date();
+  
+  const today = new Date(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate()
+  );
+  today.setHours(0, 0, 0, 0);
+  
+  const [y, m, d] = dateIso.split("-").map(Number);
+  const targetDate = new Date(y, m - 1, d);
+  targetDate.setHours(0, 0, 0, 0);
+  
+  // 과거 날짜 차단
+  if (targetDate < today) {
+    return res
+      .type("text/html")
+      .send(`<pre>지난 날짜는 조회할 수 없습니다.</pre>`);
+  }
+  
   let part = null;
   if (req.query.part) part = parseInt(req.query.part, 10);
   else {
