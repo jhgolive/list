@@ -452,15 +452,15 @@ async function fetchEventsForDate(dateIso, datePretty) {
       //const warningLine = isDateSum18(dateIso) ? `💢 ${datePretty} 사고조심  0건` : `✨ ${datePretty}  0건`;
       const warningLine = isDateSum18(dateIso) ? `✨ ${datePretty} 💢사고조심  0건` : `✨ ${datePretty}  0건`;
       const supportLine =
-      `지원: <a href="#" onclick="copyAccountNumber();return false;" style="text-decoration:underline;color:inherit;">카카오 33330-7696-7896</a>, ` +
+      `지원: <a href="#" onclick="copyAccountNumber();return false;" style="text-decoration:underline;color:inherit;">카카오 33330-7696-7896 오J한</a>, ` +
       `<a href="https://qr.kakaopay.com/FT8wKBNyw" target="_blank" style="text-decoration:underline;color:inherit;">카카오페이</a>`;
   
       //const text = warningLine + `\n\n   - 해당 날짜에 일정이 없습니다. -\n\n💫${formatKSTTime()} ✨신규 💢레드데이  🍖쩡햄Live`;
       //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `💫${formatKSTTime()} ✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/저녁/최대량  🍖쩡햄Live`;
       //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨서울 최저/최고 새벽/아침/낮/저녁/최대량` + `\n✨신규 💢레드데이 💫${formatKSTTime()}  🍖쩡햄Live`;
       //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} 🍖쩡햄Live`;
-      //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} <a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:none;">🍖쩡햄<span style="color:red;">L</span>ive</a>`;
-      const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨날짜클릭:7일캐싱 💢레드데이 ✨신규` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} <a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:none;">🍖쩡햄<span style="color:red;">L</span>ive</a>\n\n` + supportLine;
+      //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} <a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:underline;">🍖쩡햄<span style="color:red;">L</span>ive</a>`;
+      const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨날짜클릭:7일캐싱 💢레드데이 ✨신규` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} <a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:underline;">🍖쩡햄<span style="color:red;">L</span>ive</a>\n\n` + supportLine;
       
       cache.set(dateIso, { updated: Date.now(), full: text, chunks: [text], count: 0 });
       return;
@@ -613,15 +613,15 @@ async function fetchEventsForDate(dateIso, datePretty) {
     //const warningLine = isDateSum18(dateIso) ? `💢 ${datePretty} 사고조심  ${results.length}건` : `✨ ${datePretty}  ${results.length}건`;
     const warningLine = isDateSum18(dateIso) ? `✨ ${datePretty} 💢사고조심  ${results.length}건` : `✨ ${datePretty}  ${results.length}건`;
     const supportLine =
-    `지원: <a href="#" onclick="copyAccountNumber();return false;" style="text-decoration:underline;color:inherit;">카카오 33330-7696-7896</a>, ` +
+    `지원: <a href="#" onclick="copyAccountNumber();return false;" style="text-decoration:underline;color:inherit;">카카오 33330-7696-7896 오J한</a>, ` +
     `<a href="https://qr.kakaopay.com/FT8wKBNyw" target="_blank" style="text-decoration:underline;color:inherit;">카카오페이</a>`;
   
     //const full = warningLine + `\n\n${chunks.join("\n\n")}\n\n💫${updatedTime} ✨신규 💢레드데이  🍖쩡햄Live`;
     //const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `💫${updatedTime} ✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/저녁/최대량  🍖쩡햄Live`;
     //const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨서울 최저/최고 새벽/아침/낮/저녁/최대량` + `\n✨신규 💢레드데이 💫${updatedTime}  🍖쩡햄Live`;
     //const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${updatedTime} 🍖쩡햄Live`;
-    //const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${updatedTime} <a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:none;">🍖쩡햄<span style="color:red;">L</span>ive</a>`;
-    const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨날짜클릭:7일캐싱 💢레드데이 ✨신규` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${updatedTime} <a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:none;">🍖쩡햄<span style="color:red;">L</span>ive</a>\n\n` + supportLine;
+    //const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${updatedTime} <a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:underline;">🍖쩡햄<span style="color:red;">L</span>ive</a>`;
+    const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨날짜클릭:7일캐싱 💢레드데이 ✨신규` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${updatedTime} <a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:underline;">🍖쩡햄<span style="color:red;">L</span>ive</a>\n\n` + supportLine;
     
     cache.set(dateIso, {
       updated: Date.now(),
