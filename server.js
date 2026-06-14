@@ -818,7 +818,7 @@ ${body}</pre>
 <hr>
 
 <pre style="text-align:left;">
-오늘 방문자 ${dailyStats.visitors.size}  조회수 ${dailyStats.views}  <a href="#" onclick="like();return false;">❤️</a> ${dailyStats.likes}
+오늘 방문자 ${dailyStats.visitors.size}  조회수 ${dailyStats.views}  <a href="#" onclick="like();return false;" style="text-decoration:none;">❤️</a> ${dailyStats.likes}
 </pre>
 
 <script>
