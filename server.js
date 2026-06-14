@@ -359,6 +359,16 @@ function copyAccountNumber() {
 }
 
 // =====================
+// 방문자 조회수
+// =====================
+function analyticsScript() {
+  return `
+<!-- Cloudflare Web Analytics -->
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "230c2a84dbfe44ed94753e7a1fb00c4b"}'></script>
+<!-- End Cloudflare Web Analytics -->`;
+}
+
+// =====================
 // 캐시 저장소
 // =====================
 const cache = new Map();
@@ -724,7 +734,7 @@ app.get(["/", "/nightbot"], async (req, res) => {
   // 과거 날짜 차단
   if (targetDate < today) {
     return res.type("text/html").send(`
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">${analyticsScript()}
     
     <pre>지난 날짜는 조회할 수 없습니다.
     
@@ -764,7 +774,7 @@ app.get(["/", "/nightbot"], async (req, res) => {
         /(\d{4})년 (\d{2})월 (\d{2})일 \(([^)]+)\)/,
         `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:underline;"><span style="color:red;font-weight:bold;">$1</span>년 <span style="color:red;font-weight:bold;">$2</span>월 <span style="color:red;font-weight:bold;">$3</span>일 (<span style="color:red;font-weight:bold;">$4</span>)</a>`);
             
-return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1">${copyAccount()}<pre>${linkedHeader}
+return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1">${analyticsScript()}${copyAccount()}<pre>${linkedHeader}
 ${body}</pre>`);
     }
     
@@ -790,7 +800,7 @@ ${body}</pre>`);
     }
 
     //return res.type("text/plain").send(out);
-    return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1"><pre>${out}</pre>`);
+    return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1">${analyticsScript()}<pre>${out}</pre>`);
   }
 
   // 캐시에 없음 → 즉시 크롤링
@@ -801,7 +811,7 @@ ${body}</pre>`);
   const newData = cache.get(dateIso) || before;
   //return res.type("text/plain").send(newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`);
   //return res.type("text/html").send((newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`).replace(/\n/g, "<br>"));
-  return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1"><pre>${newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`}</pre>`);
+  return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1">${analyticsScript()}<pre>${newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`}</pre>`);
 });
 
 // =====================
