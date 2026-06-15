@@ -479,7 +479,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
       //const warningLine = isDateSum18(dateIso) ? `💢 ${datePretty} 사고조심  0건` : `✨ ${datePretty}  0건`;
       const warningLine = isDateSum18(dateIso) ? `✨ ${datePretty} 💢사고조심  0건` : `✨ ${datePretty}  0건`;
       const supportLine =
-      `지원: <a href="#" onclick="copyAccountNumber();return false;" style="text-decoration:underline;color:inherit;">카카오 33330-7696-7896 오J한</a>, ` +
+      `⚡지원: <a href="#" onclick="copyAccountNumber();return false;" style="text-decoration:underline;color:inherit;">카카오 33330-7696-7896 오J한</a>, ` +
       `<a href="https://qr.kakaopay.com/FT8wKBNyw" target="_blank" style="text-decoration:underline;color:inherit;">카카오페이</a>`;
   
       //const text = warningLine + `\n\n   - 해당 날짜에 일정이 없습니다. -\n\n💫${formatKSTTime()} ✨신규 💢레드데이  🍖쩡햄Live`;
@@ -640,7 +640,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
     //const warningLine = isDateSum18(dateIso) ? `💢 ${datePretty} 사고조심  ${results.length}건` : `✨ ${datePretty}  ${results.length}건`;
     const warningLine = isDateSum18(dateIso) ? `✨ ${datePretty} 💢사고조심  ${results.length}건` : `✨ ${datePretty}  ${results.length}건`;
     const supportLine =
-    `지원: <a href="#" onclick="copyAccountNumber();return false;" style="text-decoration:underline;color:inherit;">카카오 33330-7696-7896 오J한</a>, ` +
+    `⚡지원: <a href="#" onclick="copyAccountNumber();return false;" style="text-decoration:underline;color:inherit;">카카오 33330-7696-7896 오J한</a>, ` +
     `<a href="https://qr.kakaopay.com/FT8wKBNyw" target="_blank" style="text-decoration:underline;color:inherit;">카카오페이</a>`;
   
     //const full = warningLine + `\n\n${chunks.join("\n\n")}\n\n💫${updatedTime} ✨신규 💢레드데이  🍖쩡햄Live`;
@@ -822,7 +822,7 @@ ${body}</pre>
 <hr>
 
 <pre style="text-align:left;">
-오늘: 방문자 ${dailyStats.visitors.size}  조회수 ${dailyStats.views}  <span id="heart">${heart}</span> <span id="likeCount">${dailyStats.likes}</span>
+⚡오늘: 방문자 ${dailyStats.visitors.size}  조회수 ${dailyStats.views}  <span id="heart">${heart}</span> <span id="likeCount">${dailyStats.likes}</span>
 </pre>
 
 <script>
