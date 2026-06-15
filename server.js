@@ -803,7 +803,7 @@ app.get(["/", "/nightbot"], async (req, res) => {
       
       const heart = liked
         ? `<a href="#" style="text-decoration:none;color:red;">❤️</a>`
-        : `<a href="#" onclick="like();return false;" style="text-decoration:none;font-size:14px;display:inline-block;line-height:0;transform: translateY(1px) scaleX(1.1);-webkit-text-stroke: 1.1px #555;color:transparent;">♡</a>`;
+        : `<a href="#" onclick="like();return false;" style="text-decoration:none;font-size:14px;display:inline-block;line-height:0;transform: translateY(1px) scaleX(1.3);-webkit-text-stroke: 1.1px #555;color:transparent;">♡</a>`;
     
       // 날짜 부분만 추출
       //const linkedHeader = header.replace(
@@ -822,7 +822,7 @@ ${body}</pre>
 <hr>
 
 <pre style="text-align:left;">
-오늘 방문자 ${dailyStats.visitors.size}  조회수 ${dailyStats.views}  <span id="heart">${heart}</span> <span id="likeCount">${dailyStats.likes}</span>
+오늘: 방문자 ${dailyStats.visitors.size}  조회수 ${dailyStats.views}  <span id="heart">${heart}</span> <span id="likeCount">${dailyStats.likes}</span>
 </pre>
 
 <script>
