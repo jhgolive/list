@@ -41,7 +41,7 @@ const PUPPETEER_OPTIONS = {
     "--no-first-run",
     "--no-zygote",
   
-    //"--single-process",
+    "--single-process",
     "--disable-extensions",
     "--disable-background-networking",
     "--disable-background-timer-throttling",
