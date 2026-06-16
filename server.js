@@ -822,7 +822,7 @@ ${body}</pre>
 <hr>
 
 <pre style="text-align:left;">
-⚡오늘: 방문자 ${dailyStats.visitors.size}  조회수 ${dailyStats.views}  <span id="heart">${heart}</span> <span id="likeCount">${dailyStats.likes}</span>
+⚡오늘: 방문자 ${dailyStats.visitors.size}  조회수 ${dailyStats.views}  <span id="heart">${heart}</span> <span id="likeCount">${dailyStats.likes}</span>          <a href="#" onclick="sharePage();return false;">📤공유</a>
 </pre>
 
 <script>
@@ -841,6 +841,23 @@ async function like() {
   count.innerText = d.likes;
 }
 
+// 공유 하기
+function sharePage() {
+  const url = 'https://godwar.onrender.com';
+
+  if (navigator.share) {
+    navigator.share({
+      title: '쩡햄Live',
+      text: '집회 일정 확인',
+      //url: location.href  //현재 페이지
+      url
+    });
+  } else {
+    //navigator.clipboard.writeText(location.href);  //현재 페이지
+    navigator.clipboard.writeText(url);
+    alert('주소가 복사되었습니다.');
+  }
+}
 </script>
 `);
     }
