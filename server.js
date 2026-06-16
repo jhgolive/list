@@ -1,11 +1,11 @@
 import fs from "fs";
 import express from "express";
 import puppeteer from "puppeteer-extra";
-import StealthPlugin from "puppeteer-extra-plugin-stealth";
+//import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import dotenv from "dotenv";
 dotenv.config();
 
-puppeteer.use(StealthPlugin());
+//puppeteer.use(StealthPlugin());
 
 const app = express();
 const PORT = process.env.PORT || 3000;
