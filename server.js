@@ -708,6 +708,13 @@ async function refreshCache() {
         cache.delete(key);
       }
     }
+
+    // 🔥 7일 밖 날씨 캐시 삭제
+    for (const key of weatherCache.keys()) {
+      if (!validDates.has(key)) {
+        weatherCache.delete(key);
+      }
+    }
     
     console.log("✅ 캐시 갱신 완료");
     if (browser) {
