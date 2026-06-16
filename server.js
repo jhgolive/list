@@ -802,9 +802,9 @@ app.get(["/", "/nightbot"], async (req, res) => {
       const liked = dailyStats.likedIPs.has(ip);
       
       const heart = liked
-        ? `<a href="#" style="text-decoration:none;color:red;">❤️</a>`
+        ? `<a href="#" onclick="return false;" style="text-decoration:none;color:red;">❤️</a>`
         : `<a href="#" onclick="like();return false;" style="text-decoration:none;font-size:14px;display:inline-block;line-height:1;transform: translateY(0px) scaleX(1.2);-webkit-text-stroke: 1.1px #555;color:transparent;">♡</a>`;
-    
+      
       // 날짜 부분만 추출
       //const linkedHeader = header.replace(
       //  /(\d{4}년 \d{2}월 \d{2}일 \([^)]+\))/,
