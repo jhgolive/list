@@ -386,6 +386,22 @@ function resetDailyStats() {
 }
 
 // =====================
+// 공유하기
+// =====================
+function sharePage() {
+  if (navigator.share) {
+    navigator.share({
+      title: '쩡햄Live',
+      text: '집회 일정 확인',
+      url: location.href
+    });
+  } else {
+    navigator.clipboard.writeText(location.href);
+    alert('주소가 복사되었습니다.');
+  }
+}
+
+// =====================
 // 캐시 저장소
 // =====================
 const cache = new Map();
@@ -822,7 +838,7 @@ ${body}</pre>
 <hr>
 
 <pre style="text-align:left;">
-⚡오늘: 방문자 ${dailyStats.visitors.size}  조회수 ${dailyStats.views}  <span id="heart">${heart}</span> <span id="likeCount">${dailyStats.likes}</span>
+⚡오늘: 방문자 ${dailyStats.visitors.size}  조회수 ${dailyStats.views}  <span id="heart">${heart}</span> <span id="likeCount">${dailyStats.likes}</span>          <a href="#" onclick="sharePage();return false;">📤공유</a>
 </pre>
 
 <script>
