@@ -813,7 +813,8 @@ app.get(["/", "/nightbot"], async (req, res) => {
 
 const topLink = `
 
-💥 <a href="/" style="color:gold;text-decoration:none;font-weight:bold;">자유는 그냥 오지 않는다</a> 💥`;
+💥 <a href="/" style="color:gold;text-decoration:none;font-weight:bold;">자유는 그냥 오지 않는다</a> 💥
+`;
       
       // 날짜 부분만 추출
       //const linkedHeader = header.replace(
