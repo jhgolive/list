@@ -810,6 +810,12 @@ app.get(["/", "/nightbot"], async (req, res) => {
       const heart = liked
         ? `<a href="#" onclick="return false;" style="text-decoration:none;color:red;">❤️</a>`
         : `<a href="#" onclick="like();return false;" style="text-decoration:none;font-size:14px;display:inline-block;line-height:1;transform: translateY(0px) scaleX(1.2);-webkit-text-stroke: 1.1px #555;color:transparent;">♡</a>`;
+
+      const topLink = `
+        <a href="/" style="color:gold;text-decoration:none;font-weight:bold;">
+          💥 자유는 그냥 오지 않는다 💥
+        </a>
+      `;
       
       // 날짜 부분만 추출
       //const linkedHeader = header.replace(
@@ -819,13 +825,12 @@ app.get(["/", "/nightbot"], async (req, res) => {
 
       // 날짜 부분만 추출, 색상
       const linkedHeader = header.replace(
-        /^✨/,
-        `<a href="/" style="color:inherit;text-decoration:none;">✨</a>`
-      ).replace(
         /(\d{4})년 (\d{2})월 (\d{2})일 \(([^)]+)\)/,
         `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:underline;"><span style="color:red;font-weight:bold;">$1</span>년 <span style="color:red;font-weight:bold;">$2</span>월 <span style="color:red;font-weight:bold;">$3</span>일 (<span style="color:red;font-weight:bold;">$4</span>)</a>`);
-            
-return res.type("text/html").send(`<title>집회 일정 - 쩡햄Live</title><meta name="description" content="집회 일정 및 날씨 정보"><meta property="og:title" content="집회 일정"><meta property="og:description" content="집회 일정 및 날씨 정보"><meta property="og:url" content="https://godwar.onrender.com"><meta property="og:type" content="website"><meta name="viewport" content="width=device-width, initial-scale=1">${copyAccount()}<pre>${linkedHeader}
+
+return res.type("text/html").send(`<title>집회 일정 - 쩡햄Live</title><meta name="description" content="집회 일정 및 날씨 정보"><meta property="og:title" content="집회 일정"><meta property="og:description" content="집회 일정 및 날씨 정보"><meta property="og:url" content="https://godwar.onrender.com"><meta property="og:type" content="website"><meta name="viewport" content="width=device-width, initial-scale=1">${copyAccount()}<pre>${topLink}
+
+${linkedHeader}
 ${body}</pre>
 
 <hr>
