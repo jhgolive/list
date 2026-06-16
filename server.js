@@ -819,6 +819,9 @@ app.get(["/", "/nightbot"], async (req, res) => {
 
       // 날짜 부분만 추출, 색상
       const linkedHeader = header.replace(
+        /^✨/,
+        `<a href="/" style="color:inherit;text-decoration:none;">✨</a>`
+      ).replace(
         /(\d{4})년 (\d{2})월 (\d{2})일 \(([^)]+)\)/,
         `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:underline;"><span style="color:red;font-weight:bold;">$1</span>년 <span style="color:red;font-weight:bold;">$2</span>월 <span style="color:red;font-weight:bold;">$3</span>일 (<span style="color:red;font-weight:bold;">$4</span>)</a>`);
             
