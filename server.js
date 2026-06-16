@@ -904,15 +904,6 @@ function sharePage() {
   const before = cache.get(dateIso);
   
   await fetchEventsForDate(dateIso, dateStr);
-
-  if (browser) {
-    try {
-      await browser.close();
-    } catch {}
-  
-    browser = null;
-    console.log("🧹 요청 후 브라우저 종료");
-  }
   
   const newData = cache.get(dateIso) || before;
   //return res.type("text/plain").send(newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`);
