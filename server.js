@@ -811,11 +811,9 @@ app.get(["/", "/nightbot"], async (req, res) => {
         ? `<a href="#" onclick="return false;" style="text-decoration:none;color:red;">❤️</a>`
         : `<a href="#" onclick="like();return false;" style="text-decoration:none;font-size:14px;display:inline-block;line-height:1;transform: translateY(0px) scaleX(1.2);-webkit-text-stroke: 1.1px #555;color:transparent;">♡</a>`;
 
-      const topLink = `
-        <a href="/" style="color:gold;text-decoration:none;font-weight:bold;">
-          💥 자유는 그냥 오지 않는다 💥
-        </a>
-      `;
+const topLink = `
+💥 <a href="/" style="color:gold;text-decoration:none;font-weight:bold;">자유는 그냥 오지 않는다</a> 💥
+`;
       
       // 날짜 부분만 추출
       //const linkedHeader = header.replace(
