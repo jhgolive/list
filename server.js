@@ -849,8 +849,8 @@ function sharePage() {
     navigator.share({
       title: '쩡햄Live',
       text: '집회 일정 확인',
-      //url: location.href  //현재 페이지
-      url: 'https://godwar.onrender.com'
+      url: location.href  //현재 페이지
+      //url: 'https://godwar.onrender.com'
     });
   } else {
     navigator.clipboard.writeText(location.href);
