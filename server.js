@@ -770,6 +770,12 @@ app.get(["/", "/nightbot"], async (req, res) => {
   // 과거 날짜 차단
   if (targetDate < today) {
     return res.type("text/html").send(`
+    <title>집회 일정 - 쩡햄Live</title>
+    <meta name="description" content="집회 일정 및 날씨 정보">
+    <meta property="og:title" content="집회 일정">
+    <meta property="og:description" content="집회 일정 및 날씨 정보">
+    <meta property="og:url" content="https://godwar.onrender.com">
+    <meta property="og:type" content="website">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <pre>지난 날짜는 조회할 수 없습니다.
@@ -816,13 +822,13 @@ app.get(["/", "/nightbot"], async (req, res) => {
         /(\d{4})년 (\d{2})월 (\d{2})일 \(([^)]+)\)/,
         `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:underline;"><span style="color:red;font-weight:bold;">$1</span>년 <span style="color:red;font-weight:bold;">$2</span>월 <span style="color:red;font-weight:bold;">$3</span>일 (<span style="color:red;font-weight:bold;">$4</span>)</a>`);
             
-return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1">${copyAccount()}<pre>${linkedHeader}
+return res.type("text/html").send(`<title>집회 일정 - 쩡햄Live</title><meta name="description" content="집회 일정 및 날씨 정보"><meta property="og:title" content="집회 일정"><meta property="og:description" content="집회 일정 및 날씨 정보"><meta property="og:url" content="https://godwar.onrender.com"><meta property="og:type" content="website"><meta name="viewport" content="width=device-width, initial-scale=1">${copyAccount()}<pre>${linkedHeader}
 ${body}</pre>
 
 <hr>
 
 <pre style="text-align:left;">
-⚡오늘: 방문자 ${dailyStats.visitors.size}  조회수 ${dailyStats.views}  <span id="heart">${heart}</span> <span id="likeCount">${dailyStats.likes}</span>          <a href="#" onclick="sharePage();return false;">📤공유</a>
+⚡오늘: 방문자 ${dailyStats.visitors.size}  조회수 ${dailyStats.views}  <span id="heart">${heart}</span> <span id="likeCount">${dailyStats.likes}</span>         <a href="#" onclick="sharePage();return false;">📤공유</a>
 </pre>
 
 <script>
@@ -847,7 +853,7 @@ function sharePage() {
 
   if (navigator.share) {
     navigator.share({
-      title: '쩡햄Live',
+      //title: '쩡햄Live',
       text: '집회 일정 확인',
       //url: location.href  //현재 페이지
       url
@@ -884,7 +890,7 @@ function sharePage() {
     }
 
     //return res.type("text/plain").send(out);
-    return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1"><pre>${out}</pre>`);
+    return res.type("text/html").send(`<title>집회 일정 - 쩡햄Live</title><meta name="description" content="집회 일정 및 날씨 정보"><meta property="og:title" content="집회 일정"><meta property="og:description" content="집회 일정 및 날씨 정보"><meta property="og:url" content="https://godwar.onrender.com"><meta property="og:type" content="website"><meta name="viewport" content="width=device-width, initial-scale=1"><pre>${out}</pre>`);
   }
 
   // 캐시에 없음 → 즉시 크롤링
@@ -895,7 +901,7 @@ function sharePage() {
   const newData = cache.get(dateIso) || before;
   //return res.type("text/plain").send(newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`);
   //return res.type("text/html").send((newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`).replace(/\n/g, "<br>"));
-  return res.type("text/html").send(`<meta name="viewport" content="width=device-width, initial-scale=1"><pre>${newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`}</pre>`);
+  return res.type("text/html").send(`<title>집회 일정 - 쩡햄Live</title><meta name="description" content="집회 일정 및 날씨 정보"><meta property="og:title" content="집회 일정"><meta property="og:description" content="집회 일정 및 날씨 정보"><meta property="og:url" content="https://godwar.onrender.com"><meta property="og:type" content="website"><meta name="viewport" content="width=device-width, initial-scale=1"><pre>${newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`}</pre>`);
 });
 
 // =====================
