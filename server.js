@@ -386,23 +386,6 @@ function resetDailyStats() {
 }
 
 // =====================
-// 공유하기
-// =====================
-function sharePage() {
-  if (navigator.share) {
-    navigator.share({
-      title: '쩡햄Live',
-      text: '집회 일정 확인',
-      //url: location.href  //현재 페이지
-      url: 'https://godwar.onrender.com'
-    });
-  } else {
-    navigator.clipboard.writeText(location.href);
-    alert('주소가 복사되었습니다.');
-  }
-}
-
-// =====================
 // 캐시 저장소
 // =====================
 const cache = new Map();
@@ -857,6 +840,24 @@ async function like() {
   // 숫자 변경
   count.innerText = d.likes;
 }
+
+// =====================
+// 공유하기
+// =====================
+function sharePage() {
+  if (navigator.share) {
+    navigator.share({
+      title: '쩡햄Live',
+      text: '집회 일정 확인',
+      //url: location.href  //현재 페이지
+      url: 'https://godwar.onrender.com'
+    });
+  } else {
+    navigator.clipboard.writeText(location.href);
+    alert('주소가 복사되었습니다.');
+  }
+}
+
 </script>
 `);
     }
