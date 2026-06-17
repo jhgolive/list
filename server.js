@@ -166,6 +166,31 @@ function isDateSum18(dateIso) {
 // =====================
 // 날씨
 // =====================
+async function fetchAllWeather() {
+  if (
+    weatherAllCache &&
+    Date.now() - weatherAllCacheTime < 60 * 60 * 1000
+  ) {
+    return weatherAllCache;
+  }
+
+  const url =
+    "https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&hourly=temperature_2m,precipitation_probability,precipitation,weathercode&timezone=Asia/Seoul";
+
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`);
+  }
+
+  weatherAllCache = await res.json();
+  weatherAllCacheTime = Date.now();
+
+  console.log("🌤️ 날씨 API 실제 호출");
+
+  return weatherAllCache;
+}
+
 async function fetchWeather(dateIso) {
   try {
     const cached = weatherCache.get(dateIso);
@@ -174,7 +199,7 @@ async function fetchWeather(dateIso) {
       return cached.data;
     }
     
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&hourly=temperature_2m,precipitation_probability,precipitation,weathercode&timezone=Asia/Seoul`;
+    //const url = `https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&hourly=temperature_2m,precipitation_probability,precipitation,weathercode&timezone=Asia/Seoul`;
 
     //const res = await fetch(url);
     //const data = await res.json();
@@ -185,6 +210,7 @@ async function fetchWeather(dateIso) {
     //const precs = data.hourly.precipitation;
     //const codes = data.hourly.weathercode;
     
+    /*
     const res = await fetch(url);
     
     if (!res.ok) {
@@ -213,7 +239,10 @@ async function fetchWeather(dateIso) {
       console.log("❌ 날씨 원본 응답:", text.slice(0, 300));
       throw new Error("JSON 파싱 실패");
     }
+    */
 
+    const data = await fetchAllWeather();
+    
     const hourly = data?.hourly;
     
     if (!hourly) {
@@ -391,6 +420,8 @@ function resetDailyStats() {
 // =====================
 const cache = new Map();
 const weatherCache = new Map();
+let weatherAllCache = null;
+let weatherAllCacheTime = 0;
 
 // =====================
 // 일정 크롤링
