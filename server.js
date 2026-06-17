@@ -500,6 +500,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
 
     
     for (const { href, order } of links) {
+      console.log(`${dateIso} 링크수: ${links.length}`);
       const detail = await currentBrowser.newPage();
       try {
         //await detail.goto(href, { waitUntil: "networkidle2", timeout: 60000 });
