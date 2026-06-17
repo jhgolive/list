@@ -453,8 +453,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
     
     //const url = `https://kukmin.libertysocial.co.kr/assembly?date=${encodeURIComponent(dateIso)}`;
     const url = `https://kukmin.libertysocial.co.kr/assembly?tab=calendar&date=${encodeURIComponent(dateIso)}`;
-    //await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
-    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000});
+    await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
+    //await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000});
   
     const links = await page.evaluate(() =>
       Array.from(document.querySelectorAll("a[href*='/assembly/']"))
@@ -498,8 +498,9 @@ async function fetchEventsForDate(dateIso, datePretty) {
   
     const results = [];
 
-    const detail = await currentBrowser.newPage();
+    
     for (const { href, order } of links) {
+      const detail = await currentBrowser.newPage();
       try {
         //await detail.goto(href, { waitUntil: "networkidle2", timeout: 60000 });
         await detail.goto(href, { waitUntil: "domcontentloaded", timeout: 30000 });
