@@ -46,8 +46,8 @@ const PUPPETEER_OPTIONS = {
     "--disable-background-networking",
     "--disable-background-timer-throttling",
     "--disable-renderer-backgrounding",
-    "--mute-audio"
-    //"--disable-features=site-per-process",
+    "--mute-audio",
+    "--disable-features=site-per-process"
     //"--memory-pressure-off"
   ]
 };
