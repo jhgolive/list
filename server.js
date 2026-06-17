@@ -498,9 +498,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
   
     const results = [];
 
-    
+    const detail = await currentBrowser.newPage();
     for (const { href, order } of links) {
-      const detail = await currentBrowser.newPage();
       try {
         //await detail.goto(href, { waitUntil: "networkidle2", timeout: 60000 });
         await detail.goto(href, { waitUntil: "domcontentloaded", timeout: 30000 });
