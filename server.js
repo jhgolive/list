@@ -41,14 +41,15 @@ const PUPPETEER_OPTIONS = {
     "--no-first-run",
     "--no-zygote",
   
-    "--single-process",
     "--disable-extensions",
     "--disable-background-networking",
     "--disable-background-timer-throttling",
     "--disable-renderer-backgrounding",
-    "--mute-audio",
+    "--mute-audio"
+
+    //"--single-process",
+    //"--memory-pressure-off",
     //"--disable-features=site-per-process"
-    "--memory-pressure-off"
   ]
 };
 
