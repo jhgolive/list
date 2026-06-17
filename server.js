@@ -487,7 +487,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
       //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨서울 최저/최고 새벽/아침/낮/저녁/최대량` + `\n✨신규 💢레드데이 💫${formatKSTTime()}  🍖쩡햄Live`;
       //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} 🍖쩡햄Live`;
       //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} 🍖<a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:underline;">쩡햄<span style="color:red;">L</span>ive</a>`;
-      const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨날짜클릭:7일캐싱 💢레드데이 ✨신규` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} 🍖<a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:underline;">순대천사</a>\n\n` + supportLine;
+      const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨날짜클릭:7일캐싱 💢레드데이 ✨신규` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} 🍖<a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:underline;">순대전사</a>\n\n` + supportLine;
       
       cache.set(dateIso, { updated: Date.now(), full: text, chunks: [text], count: 0 });
       return;
@@ -648,7 +648,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
     //const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨서울 최저/최고 새벽/아침/낮/저녁/최대량` + `\n✨신규 💢레드데이 💫${updatedTime}  🍖쩡햄Live`;
     //const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${updatedTime} 🍖쩡햄Live`;
     //const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${updatedTime} 🍖<a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:underline;">쩡햄<span style="color:red;">L</span>ive</a>`;
-    const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨날짜클릭:7일캐싱 💢레드데이 ✨신규` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${updatedTime} 🍖<a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:underline;">순대천사</a>\n\n` + supportLine;
+    const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨날짜클릭:7일캐싱 💢레드데이 ✨신규` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${updatedTime} 🍖<a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:underline;">순대전사</a>\n\n` + supportLine;
     
     cache.set(dateIso, {
       updated: Date.now(),
@@ -777,7 +777,7 @@ app.get(["/", "/nightbot"], async (req, res) => {
   // 과거 날짜 차단
   if (targetDate < today) {
     return res.type("text/html").send(`
-    <title>집회 일정 - 순대천사</title>
+    <title>집회 일정 - 순대전사</title>
     <meta name="description" content="집회 일정 및 날씨 정보">
     <meta property="og:title" content="집회 일정">
     <meta property="og:description" content="집회 일정 및 날씨 정보">
@@ -834,7 +834,7 @@ const topLink = `
         /(\d{4})년 (\d{2})월 (\d{2})일 \(([^)]+)\)/,
         `<a href="/nightbot?date=${nextMMDD}" style="color:inherit;text-decoration:underline;"><span style="color:red;font-weight:bold;">$1</span>년 <span style="color:red;font-weight:bold;">$2</span>월 <span style="color:red;font-weight:bold;">$3</span>일 (<span style="color:red;font-weight:bold;">$4</span>)</a>`);
 
-return res.type("text/html").send(`<title>집회 일정 - 순대천사</title><meta name="description" content="집회 일정 및 날씨 정보"><meta property="og:title" content="집회 일정"><meta property="og:description" content="집회 일정 및 날씨 정보"><meta property="og:url" content="https://godwar.onrender.com"><meta property="og:type" content="website"><meta name="viewport" content="width=device-width, initial-scale=1">${copyAccount()}<pre>${topLink}
+return res.type("text/html").send(`<title>집회 일정 - 순대전사</title><meta name="description" content="집회 일정 및 날씨 정보"><meta property="og:title" content="집회 일정"><meta property="og:description" content="집회 일정 및 날씨 정보"><meta property="og:url" content="https://godwar.onrender.com"><meta property="og:type" content="website"><meta name="viewport" content="width=device-width, initial-scale=1">${copyAccount()}<pre>${topLink}
 
 ${linkedHeader}
 ${body}</pre>
@@ -904,7 +904,7 @@ function sharePage() {
     }
 
     //return res.type("text/plain").send(out);
-    return res.type("text/html").send(`<title>집회 일정 - 순대천사</title><meta name="description" content="집회 일정 및 날씨 정보"><meta property="og:title" content="집회 일정"><meta property="og:description" content="집회 일정 및 날씨 정보"><meta property="og:url" content="https://godwar.onrender.com"><meta property="og:type" content="website"><meta name="viewport" content="width=device-width, initial-scale=1"><pre>${out}</pre>`);
+    return res.type("text/html").send(`<title>집회 일정 - 순대전사</title><meta name="description" content="집회 일정 및 날씨 정보"><meta property="og:title" content="집회 일정"><meta property="og:description" content="집회 일정 및 날씨 정보"><meta property="og:url" content="https://godwar.onrender.com"><meta property="og:type" content="website"><meta name="viewport" content="width=device-width, initial-scale=1"><pre>${out}</pre>`);
   }
 
   // 캐시에 없음 → 즉시 크롤링
@@ -915,7 +915,7 @@ function sharePage() {
   const newData = cache.get(dateIso) || before;
   //return res.type("text/plain").send(newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`);
   //return res.type("text/html").send((newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`).replace(/\n/g, "<br>"));
-  return res.type("text/html").send(`<title>집회 일정 - 순대천사</title><meta name="description" content="집회 일정 및 날씨 정보"><meta property="og:title" content="집회 일정"><meta property="og:description" content="집회 일정 및 날씨 정보"><meta property="og:url" content="https://godwar.onrender.com"><meta property="og:type" content="website"><meta name="viewport" content="width=device-width, initial-scale=1"><pre>${newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`}</pre>`);
+  return res.type("text/html").send(`<title>집회 일정 - 순대전사</title><meta name="description" content="집회 일정 및 날씨 정보"><meta property="og:title" content="집회 일정"><meta property="og:description" content="집회 일정 및 날씨 정보"><meta property="og:url" content="https://godwar.onrender.com"><meta property="og:type" content="website"><meta name="viewport" content="width=device-width, initial-scale=1"><pre>${newData?.full || `${dateStr}\n\n데이터를 불러오지 못했습니다.`}</pre>`);
 });
 
 // =====================
