@@ -419,6 +419,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
         try { await currentBrowser.close(); } catch {}
       }
 
+      browser = null;   // 추가
       currentBrowser = null; // 💥 핵심
     
       currentBrowser = await getBrowser();
@@ -499,7 +500,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
     const detail = await currentBrowser.newPage();
     for (const { href, order } of links) {
       try {
-        await detail.goto(href, { waitUntil: "networkidle2", timeout: 60000 });
+        //await detail.goto(href, { waitUntil: "networkidle2", timeout: 60000 });
+        await detail.goto(href, { waitUntil: "domcontentloaded", timeout: 30000 });
     
         const event = await detail.evaluate(() => {
           const title = document.querySelector("header.flex.justify-between h1.line-clamp-2")?.innerText.trim();
