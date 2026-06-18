@@ -423,6 +423,9 @@ const weatherCache = new Map();
 let weatherAllCache = null;
 let weatherAllCacheTime = 0;
 
+const MAX_PAGES = 3;
+let activePages = 0;
+
 // =====================
 // 일정 크롤링
 // =====================
@@ -529,9 +532,27 @@ async function fetchEventsForDate(dateIso, datePretty) {
   
     const results = [];
 
+    async function safeNewPage(browser) {
+      while (activePages >= MAX_PAGES) {
+        await new Promise(r => setTimeout(r, 200));
+      }
+    
+      activePages++;
+      const page = await browser.newPage();
+    
+      const originalClose = page.close.bind(page);
+      page.close = async () => {
+        activePages--;
+        return originalClose();
+      };
+    
+      return page;
+    }
+    
     console.log(`${dateIso} 링크수: ${links.length}`);
     for (const { href, order } of links) {
-      const detail = await currentBrowser.newPage();
+      //const detail = await currentBrowser.newPage();
+      const detail = await safeNewPage(currentBrowser);
       try {
         //await detail.goto(href, { waitUntil: "networkidle2", timeout: 60000 });
         await detail.goto(href, { waitUntil: "domcontentloaded", timeout: 30000 });
