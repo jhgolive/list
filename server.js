@@ -844,9 +844,11 @@ app.get(["/", "/nightbot"], async (req, res) => {
     <meta property="og:type" content="website">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <pre>지난 날짜는 조회할 수 없습니다.
-    
-       <a href="/">오늘로 가기</a></pre>
+<pre>
+지난 날짜는 조회할 수 없습니다.
+
+
+       <a href="/">오늘로 이동</a></pre>
     `);
   }
   
