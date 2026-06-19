@@ -694,7 +694,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
       }
     
       //return `💥No${i + 1}${text}`; 번호
-      return `💥No<span style="color:red;font-weight:bold;">${i + 1}</span>${text}`;
+      return `💥No<span style="color:darkorange;font-weight:bold;">${i + 1}</span>${text}`;
     });
     
     const chunks = splitByEvents(formatted, 1);
