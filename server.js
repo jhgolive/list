@@ -510,6 +510,11 @@ async function fetchEventsForDate(dateIso, datePretty) {
       //return;
     //}
     if (!links.length) {
+        if (oldCache && oldCache.count > 0) {
+          console.log(`♻️ 링크 0개 → 기존 캐시 유지: ${dateIso}`);
+          cache.set(dateIso, oldCache);
+          return;
+        }
       //const warningLine = isDateSum18(dateIso) ? "\n💢 재난 사고 조심 💢\n" : "\n";
       //const text = `✨ ${datePretty}  0건` + warningLine + `\n해당 날짜에 일정이 없습니다.\n\n💫 ${formatKSTTime()} ✨신규 💢레드데이  @Live`;
   
