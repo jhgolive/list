@@ -11,7 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const fetching = new Map();
 
-// =====================
+// =====================//배포
 // Puppeteer Launch Options (Render + Docker 완전 대응)
 // =====================
 const CHROME_PATHS = [
