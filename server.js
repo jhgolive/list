@@ -179,14 +179,7 @@ async function fetchAllWeather() {
 
   const res = await fetch(url);
 
-  if (!res.ok) {
-    console.log(`❌ 날씨 API ${res.status}`);
-  
-    if (weatherAllCache) {
-      console.log("♻️ 전체 날씨 캐시 사용");
-      return weatherAllCache;
-    }
-  
+  if (!res.ok) {      
     throw new Error(`HTTP ${res.status}`);
   }
 
