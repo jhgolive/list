@@ -180,6 +180,13 @@ async function fetchAllWeather() {
   const res = await fetch(url);
 
   if (!res.ok) {
+    console.log(`❌ 날씨 API ${res.status}`);
+  
+    if (weatherAllCache) {
+      console.log("♻️ 전체 날씨 캐시 사용");
+      return weatherAllCache;
+    }
+  
     throw new Error(`HTTP ${res.status}`);
   }
 
@@ -727,7 +734,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
 
     console.log(`📦 ${dateIso} 저장 여부:`, cache.has(dateIso));
     //console.log(`✅ 캐시 완료: ${dateIso} (${results.length}건)`);
-    console.log(`✅ 캐시 완료: ${dateIso} (${results.length}건, 이전 ${oldCache?.count ?? 0}건)`);
+    //console.log(`✅ 캐시 완료: ${dateIso} (${results.length}건, 이전 ${oldCache?.count ?? 0}건)`);
+    console.log(`✅ 캐시 완료: ${dateIso} (${oldCache?.count ?? 0} → ${results.length}건)`);
   } catch (e) {
     console.error(`❌ 일정 크롤링 실패 (${dateIso}):`, e.message);
   
