@@ -511,7 +511,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
     //}
     if (!links.length) {
         if (oldCache && oldCache.count > 0) {
-          console.log(`♻️ 링크 0개 → 기존 캐시 유지: ${dateIso}`);
+          //console.log(`♻️ 링크 0개 → 기존 캐시 유지: ${dateIso}`);
+          console.log(`♻️ 링크 0개 → 기존 캐시 유지: ${dateIso} (${oldCache.count}건)`);
           cache.set(dateIso, oldCache);
           return;
         }
@@ -623,8 +624,11 @@ async function fetchEventsForDate(dateIso, datePretty) {
       .map(r => r.order);
     
     if (results.length === 0 && oldCache) {
+      //console.log(
+        //`♻️ 모든 상세페이지 실패 → 기존 캐시 유지: ${dateIso} (링크 ${links.length}개)`
+      //);
       console.log(
-        `♻️ 모든 상세페이지 실패 → 기존 캐시 유지: ${dateIso} (링크 ${links.length}개)`
+        `♻️ 모든 상세페이지 실패 → 기존 캐시 유지: ${dateIso} (${oldCache.count}건, 링크 ${links.length}개)`
       );
       cache.set(dateIso, oldCache);
       return;
@@ -722,12 +726,14 @@ async function fetchEventsForDate(dateIso, datePretty) {
     });
 
     console.log(`📦 ${dateIso} 저장 여부:`, cache.has(dateIso));
-    console.log(`✅ 캐시 완료: ${dateIso} (${results.length}건)`);
+    //console.log(`✅ 캐시 완료: ${dateIso} (${results.length}건)`);
+    console.log(`✅ 캐시 완료: ${dateIso} (${results.length}건, 이전 ${oldCache?.count ?? 0}건)`);
   } catch (e) {
     console.error(`❌ 일정 크롤링 실패 (${dateIso}):`, e.message);
   
     if (oldCache) {
-      console.log(`♻️ 이전 캐시 유지: ${dateIso}`);
+      //console.log(`♻️ 이전 캐시 유지: ${dateIso}`);
+      console.log(`♻️ 이전 캐시 유지: ${dateIso} (${oldCache.count}건)`);
       cache.set(dateIso, oldCache);
     }    
   } finally {
@@ -850,6 +856,7 @@ app.get(["/", "/nightbot"], async (req, res) => {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
 <pre>
+
 지난 날짜는 조회할 수 없습니다.
 
 
