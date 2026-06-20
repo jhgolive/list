@@ -167,28 +167,49 @@ function isDateSum18(dateIso) {
 // 날씨
 // =====================
 async function fetchAllWeather() {
+  //if (
+    //weatherAllCache &&
+    //Date.now() - weatherAllCacheTime < 60 * 60 * 1000
+  //) {
+    //return weatherAllCache;
+  //}
+
+  // 성공 캐시 또는 실패 캐시 모두 1시간 유지
   if (
-    weatherAllCache &&
+    weatherAllCacheTime &&
     Date.now() - weatherAllCacheTime < 60 * 60 * 1000
   ) {
+    if (weatherAllFailed) {
+      throw new Error("날씨 API 최근 실패");
+    }
+  
     return weatherAllCache;
   }
-
-  const url =
-    "https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&hourly=temperature_2m,precipitation_probability,precipitation,weathercode&timezone=Asia/Seoul";
-
-  const res = await fetch(url);
-
-  if (!res.ok) {      
-    throw new Error(`HTTP ${res.status}`);
+  
+  try {
+    const url =
+      "https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&hourly=temperature_2m,precipitation_probability,precipitation,weathercode&timezone=Asia/Seoul";
+  
+    const res = await fetch(url);
+  
+    if (!res.ok) {      
+      throw new Error(`HTTP ${res.status}`);
+    }
+  
+    weatherAllCache = await res.json();
+    weatherAllCacheTime = Date.now();
+    weatherAllFailed = false;
+  
+    console.log("🌤️ 날씨 API 실제 호출");
+  
+    return weatherAllCache;
+  } catch (e) {
+  
+      weatherAllCacheTime = Date.now(); // 실패도 기록
+      weatherAllFailed = true;
+  
+      throw e;
   }
-
-  weatherAllCache = await res.json();
-  weatherAllCacheTime = Date.now();
-
-  console.log("🌤️ 날씨 API 실제 호출");
-
-  return weatherAllCache;
 }
 
 async function fetchWeather(dateIso) {
@@ -422,6 +443,7 @@ const cache = new Map();
 const weatherCache = new Map();
 let weatherAllCache = null;
 let weatherAllCacheTime = 0;
+let weatherAllFailed = false;
 
 const MAX_PAGES = 3;
 let activePages = 0;
