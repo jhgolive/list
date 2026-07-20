@@ -916,6 +916,7 @@ app.get(["/", "/nightbot"], async (req, res) => {
 
 const topLink = `
 
+<h1>- 점검 중 -</h1>
 💥 <a href="/" style="color:darkorange;text-decoration:none;font-weight:bold;">자유는 그냥 오지 않는다</a> 💥
 `;
       
