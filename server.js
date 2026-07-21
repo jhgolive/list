@@ -514,7 +514,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
     //await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000});
   
     const links = await page.evaluate(() =>
-      Array.from(document.querySelectorAll("a[href*='/assembly/']"))
+      //Array.from(document.querySelectorAll("a[href*='/assembly/']"))
+      Array.from(document.querySelectorAll("a[href*='/events/']"))
         .map((a, i) => ({ href: a.href, order: i })) // order = 사이트 등록 순서
         .filter((v, i, arr) => arr.findIndex(x => x.href === v.href) === i)
     );
