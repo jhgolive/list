@@ -508,7 +508,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
     }
     
     //const url = `https://kukmin.libertysocial.co.kr/assembly?date=${encodeURIComponent(dateIso)}`;
-    const url = `https://kukmin.libertysocial.co.kr/assembly?tab=calendar&date=${encodeURIComponent(dateIso)}`;
+    //const url = `https://kukmin.libertysocial.co.kr/assembly?tab=calendar&date=${encodeURIComponent(dateIso)}`;
+    const url = `https://kukmin.libertysocial.co.kr/events?date=${encodeURIComponent(dateIso)}`;
     await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
     //await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000});
   
