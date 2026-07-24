@@ -508,14 +508,12 @@ async function fetchEventsForDate(dateIso, datePretty) {
     }
     
     //const url = `https://kukmin.libertysocial.co.kr/assembly?date=${encodeURIComponent(dateIso)}`;
-    //const url = `https://kukmin.libertysocial.co.kr/assembly?tab=calendar&date=${encodeURIComponent(dateIso)}`;
-    const url = `https://kukmin.libertysocial.co.kr/events?date=${encodeURIComponent(dateIso)}`;
+    const url = `https://kukmin.libertysocial.co.kr/assembly?tab=calendar&date=${encodeURIComponent(dateIso)}`;
     await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
     //await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000});
   
     const links = await page.evaluate(() =>
-      //Array.from(document.querySelectorAll("a[href*='/assembly/']"))
-      Array.from(document.querySelectorAll("a[href*='/events/']"))
+      Array.from(document.querySelectorAll("a[href*='/assembly/']"))
         .map((a, i) => ({ href: a.href, order: i })) // order = 사이트 등록 순서
         .filter((v, i, arr) => arr.findIndex(x => x.href === v.href) === i)
     );
