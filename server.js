@@ -129,11 +129,8 @@ function formatKSTTime() {
 // 시간 변환
 // =====================
 function toKST(timeStr) {
-  if (!timeStr || !/^\d{1,2}:\d{2}$/.test(timeStr.trim())) return timeStr;
-  const [h, m] = timeStr.split(":").map(Number);
-  const utc = new Date(Date.UTC(2000, 0, 1, h, m));
-  const kst = getKSTDate(utc);
-  return `${String(kst.getHours()).padStart(2, "0")}:${String(kst.getMinutes()).padStart(2, "0")}`;
+  if (!timeStr) return timeStr;
+  return timeStr.trim();
 }
 
 function convertTimeRangeToKST(range) {
@@ -663,9 +660,10 @@ async function fetchEventsForDate(dateIso, datePretty) {
               `장소: ${event.place || "-"}\n` +
               `시간: ${kstTime || "-"}\n` +
               `<a href="${href}" target="_blank">${href}</a>`,
-    
+          
             start: startStr ? timeToNumber(startStr) : 0,
             end: endStr ? timeToNumber(endStr) : 9999,
+            hasEnd: !!endStr,
             order
           });
         }
@@ -715,7 +713,20 @@ async function fetchEventsForDate(dateIso, datePretty) {
       return;
     }
     
-    results.sort((a, b) => (a.start - b.start) || (a.end - b.end));
+    results.sort((a, b) => {
+      // 시작시간이 빠른 순
+      if (a.start !== b.start) {
+        return a.start - b.start;
+      }
+    
+      // 같은 시작시간이면 시작시간만 있는 일정 우선
+      if (a.hasEnd !== b.hasEnd) {
+        return a.hasEnd ? 1 : -1;
+      }
+    
+      // 둘 다 같은 형태면 종료시간 순
+      return a.end - b.end;
+    });
   
     //const formatted = results.map((r, i) => {
       //const isNew = newOrders.includes(r.order);
@@ -737,12 +748,15 @@ async function fetchEventsForDate(dateIso, datePretty) {
       // 시간 값 색상
       const rest = lines.slice(1).map(line => {
       
-        if (line.startsWith("시간:")) {
-          return `⚡${line.replace(
-            /^시간:\s*(\d{2}:\d{2})\s*~\s*(\d{2}:\d{2})$/,
-            '시간: <span style="color:red;">$1</span> ~ <span style="color:red;">$2</span>'
-          )}`;
-        }
+      if (line.startsWith("시간:")) {
+        return `⚡${line.replace(
+          /^시간:\s*(\d{2}:\d{2})(?:\s*~\s*(\d{2}:\d{2}))?$/,
+          (_, start, end) =>
+            end
+              ? `시간: <span style="color:red;">${start}</span> ~ <span style="color:red;">${end}</span>`
+              : `시간: <span style="color:red;">${start}</span>`
+        )}`;
+      }
       
         return `⚡${line}`;
       
@@ -973,9 +987,8 @@ app.get(["/", "/nightbot"], async (req, res) => {
         ? `<a href="#" onclick="return false;" style="text-decoration:none;color:red;">❤️</a>`
         : `<a href="#" onclick="like();return false;" style="text-decoration:none;font-size:14px;display:inline-block;line-height:1;transform: translateY(0px) scaleX(1.2);-webkit-text-stroke: 1.1px #555;color:transparent;">♡</a>`;
 
+//<h1>- 점검 중 -</h1>
 const topLink = `
-
-<h1>- 점검 중 -</h1>
 💥 <a href="/" style="color:darkorange;text-decoration:none;font-weight:bold;">자유는 그냥 오지 않는다</a> 💥
 `;
       
