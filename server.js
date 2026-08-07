@@ -591,37 +591,49 @@ async function fetchEventsForDate(dateIso, datePretty) {
     }
     
     console.log(`${dateIso} 링크수: ${links.length}`);
+
     for (const { href, order } of links) {
-      //const detail = await currentBrowser.newPage();
-      const detail = await safeNewPage(currentBrowser);
+    
+      console.log("➡️ 상세페이지 진입:", href);
+    
+      const detail = await currentBrowser.newPage();
+    
       try {
-        //await detail.goto(href, { waitUntil: "networkidle2", timeout: 60000 });
-        await detail.goto(href, { waitUntil: "domcontentloaded", timeout: 30000 });
+    
+        await detail.goto(href, {
+          waitUntil: "domcontentloaded",
+          timeout: 30000
+        });
+    
+        console.log("✅ 상세페이지 로딩:", href);
     
         const event = await detail.evaluate(() => {
-
+    
           const title =
             document.querySelector("h1.text-2xl")?.innerText.trim() || null;
-        
+    
           const info = {};
-        
-          document.querySelectorAll(".bg-card .flex.items-start").forEach(div => {
-            const label =
-              div.querySelector("p.text-xs")?.innerText.trim();
-        
-            const value =
-              div.querySelector("p.text-sm")?.innerText.trim();
-        
-            if (label && value) {
-              info[label] = value;
-            }
-          });
-        
+    
+          document
+            .querySelectorAll(".bg-card .flex.items-start")
+            .forEach(div => {
+    
+              const label =
+                div.querySelector("p.text-xs")?.innerText.trim();
+    
+              const value =
+                div.querySelector("p.text-sm")?.innerText.trim();
+    
+              if (label && value) {
+                info[label] = value;
+              }
+            });
+    
           const organizer = [...document.querySelectorAll("p")]
             .find(p => p.innerText.trim().startsWith("주최:"))
             ?.querySelector("span.font-medium")
             ?.innerText.trim() || null;
-        
+    
           return {
             title,
             date: info["날짜"] || null,
@@ -630,23 +642,40 @@ async function fetchEventsForDate(dateIso, datePretty) {
             organizer
           };
         });
-        
+    
+        console.log("📌 상세 결과:", event.title);
+    
         if (event && event.title) {
           const kstTime = convertTimeRangeToKST(event.time);
-          const [startStr, endStr] = kstTime?.split("~").map(t => t.trim()) || [];
+          const [startStr, endStr] =
+            kstTime?.split("~").map(t => t.trim()) || [];
     
           results.push({
-            //text: `: ${event.title}\n주관: ${event.organizer || "-"}\n장소: ${event.place || "-"}\n시간: ${kstTime || "-"}\n${href}`,
-            text: `: ${event.title}\n주관: ${event.organizer || "-"}\n장소: ${event.place || "-"}\n시간: ${kstTime || "-"}\n<a href="${href}" target="_blank">${href}</a>`,
+            text:
+              `: ${event.title}\n` +
+              `주관: ${event.organizer || "-"}\n` +
+              `장소: ${event.place || "-"}\n` +
+              `시간: ${kstTime || "-"}\n` +
+              `<a href="${href}" target="_blank">${href}</a>`,
+    
             start: startStr ? timeToNumber(startStr) : 0,
             end: endStr ? timeToNumber(endStr) : 9999,
-            order, // 🔥 등록 순서
+            order
           });
         }
+    
       } catch (e) {
-        console.log("⚠️ 상세 페이지 실패:", href, e.message);
+    
+        console.log(
+          "⚠️ 상세 페이지 실패:",
+          href,
+          e.message
+        );
+    
       } finally {
+    
         await detail.close().catch(() => {});
+    
       }
     }
 
