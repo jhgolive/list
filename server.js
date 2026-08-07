@@ -593,7 +593,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
     
       console.log("➡️ 상세페이지 진입:", href);
     
-      const detail = await currentBrowser.newPage();
+      //const detail = await currentBrowser.newPage();
+      const detail = await safeNewPage(currentBrowser);
     
       try {
             
