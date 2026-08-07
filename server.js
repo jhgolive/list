@@ -599,13 +599,19 @@ async function fetchEventsForDate(dateIso, datePretty) {
       const detail = await currentBrowser.newPage();
     
       try {
-    
+            
         await detail.goto(href, {
           waitUntil: "domcontentloaded",
           timeout: 30000
         });
-    
+        
         console.log("✅ 상세페이지 로딩:", href);
+        
+        await detail.waitForSelector("h1", {
+          timeout: 10000
+        });
+        
+        console.log("✅ 상세 내용 렌더링 완료:", href);
     
         const event = await detail.evaluate(() => {
     
