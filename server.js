@@ -520,7 +520,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
     const links = await page.evaluate(() =>
       Array.from(document.querySelectorAll("[data-event-id]"))
         .map((el, i) => ({
-          href: `/events/${el.dataset.eventId}`,
+          href: `https://kukmin.libertysocial.co.kr/events/${el.dataset.eventId}`,
           order: i
         }))
         .filter((v, i, arr) =>
