@@ -509,15 +509,23 @@ async function fetchEventsForDate(dateIso, datePretty) {
     
     //const url = `https://kukmin.libertysocial.co.kr/assembly?date=${encodeURIComponent(dateIso)}`;
     //const url = `https://kukmin.libertysocial.co.kr/assembly?tab=calendar&date=${encodeURIComponent(dateIso)}`;
-    const url = `https://kukmin.libertysocial.co.kr/events?date=${encodeURIComponent(dateIso)}`;
-    await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
-    //await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000});
+    const url =
+    `https://kukmin.libertysocial.co.kr/events?date=${encodeURIComponent(dateIso)}`;
   
+    await page.goto(url, {
+      waitUntil: "networkidle2",
+      timeout: 60000
+    });
+    
     const links = await page.evaluate(() =>
-      //Array.from(document.querySelectorAll("a[href*='/assembly/']"))
-      Array.from(document.querySelectorAll("a[href*='/events/']"))
-        .map((a, i) => ({ href: a.href, order: i })) // order = 사이트 등록 순서
-        .filter((v, i, arr) => arr.findIndex(x => x.href === v.href) === i)
+      Array.from(document.querySelectorAll("[data-event-id]"))
+        .map((el, i) => ({
+          href: `/events/${el.dataset.eventId}`,
+          order: i
+        }))
+        .filter((v, i, arr) =>
+          arr.findIndex(x => x.href === v.href) === i
+        )
     );
   
     try {
@@ -588,36 +596,35 @@ async function fetchEventsForDate(dateIso, datePretty) {
         await detail.goto(href, { waitUntil: "domcontentloaded", timeout: 30000 });
     
         const event = await detail.evaluate(() => {
-      
-          // 제목
-          const title = document.querySelector("h1")?.innerText.trim();
-        
-          // 주최
-          const organizer =
-            [...document.querySelectorAll("p")].find(p =>
-              p.innerText.startsWith("주최:")
-            )?.querySelector("span:last-child")?.innerText.trim() || null;
+
+          const title =
+            document.querySelector("h1.text-2xl")?.innerText.trim() || null;
         
           const info = {};
         
           document.querySelectorAll(".bg-card .flex.items-start").forEach(div => {
-        
             const label =
               div.querySelector("p.text-xs")?.innerText.trim();
         
             const value =
               div.querySelector("p.text-sm")?.innerText.trim();
         
-            if (label && value)
+            if (label && value) {
               info[label] = value;
+            }
           });
+        
+          const organizer = [...document.querySelectorAll("p")]
+            .find(p => p.innerText.trim().startsWith("주최:"))
+            ?.querySelector("span.font-medium")
+            ?.innerText.trim() || null;
         
           return {
             title,
-            organizer,
             date: info["날짜"] || null,
             time: info["시간"] || null,
-            place: info["장소"] || null
+            place: info["장소"] || null,
+            organizer
           };
         });
         
