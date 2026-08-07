@@ -588,27 +588,39 @@ async function fetchEventsForDate(dateIso, datePretty) {
         await detail.goto(href, { waitUntil: "domcontentloaded", timeout: 30000 });
     
         const event = await detail.evaluate(() => {
-          const title = document.querySelector("header.flex.justify-between h1.line-clamp-2")?.innerText.trim();
-          const container = document.querySelector(".flex.flex-col.gap-2.border-b.px-4.pb-4.pt-2");
-  
+      
+          // 제목
+          const title = document.querySelector("h1")?.innerText.trim();
+        
+          // 주최
+          const organizer =
+            [...document.querySelectorAll("p")].find(p =>
+              p.innerText.startsWith("주최:")
+            )?.querySelector("span:last-child")?.innerText.trim() || null;
+        
           const info = {};
-          if (container) {
-            container.querySelectorAll("div.flex.w-full.min-w-0.flex-1.items-center.justify-start.gap-2").forEach(div => {
-              const label = div.querySelector("div.font-semibold.text-kukmin-secondary")?.innerText;
-              const value = div.querySelector("div.min-w-0.flex-1")?.innerText.trim();
-              if (label) info[label] = value;
-            });
-          }
-  
+        
+          document.querySelectorAll(".bg-card .flex.items-start").forEach(div => {
+        
+            const label =
+              div.querySelector("p.text-xs")?.innerText.trim();
+        
+            const value =
+              div.querySelector("p.text-sm")?.innerText.trim();
+        
+            if (label && value)
+              info[label] = value;
+          });
+        
           return {
             title,
+            organizer,
             date: info["날짜"] || null,
             time: info["시간"] || null,
-            place: info["장소"] || null,
-            organizer: info["주관"] || null,
+            place: info["장소"] || null
           };
         });
-  
+        
         if (event && event.title) {
           const kstTime = convertTimeRangeToKST(event.time);
           const [startStr, endStr] = kstTime?.split("~").map(t => t.trim()) || [];
