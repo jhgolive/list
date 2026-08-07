@@ -562,7 +562,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
       //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨서울 최저/최고 새벽/아침/낮/저녁/최대량` + `\n✨신규 💢레드데이 💫${formatKSTTime()}  🍖쩡햄Live`;
       //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} 🍖쩡햄Live`;
       //const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} 🍖<a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:underline;">쩡햄<span style="color:red;">L</span>ive</a>`;
-      const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨날짜클릭:7일캐싱 💢레드데이 ✨신규` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} 🍖<a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:underline;">순대전사</a>\n\n` + supportLine;
+      const text = warningLine + `\n` + weatherLine  + `   - 해당 날짜에 일정이 없습니다. -\n\n` + `✨날짜클릭:7일캐싱 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${formatKSTTime()} 🍖<a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:underline;">순대전사</a>\n\n` + supportLine;
       
       cache.set(dateIso, { updated: Date.now(), full: text, chunks: [text], count: 0 });
       return;
@@ -782,12 +782,14 @@ async function fetchEventsForDate(dateIso, datePretty) {
         //return `⚡${line}`;
       //}).join("\n");
       
-      if (isNew) {
-        text += `✨\n${rest}`;
-      } else {
-        text += `\n${rest}`;
-      }
-    
+      //if (isNew) {
+        //text += `✨\n${rest}`;
+      //} else {
+        //text += `\n${rest}`;
+      //}
+
+      text += `\n${rest}`;
+      
       //return `💥No${i + 1}${text}`; 번호
       return `💥No<span style="color:darkorange;font-weight:bold;">${i + 1}</span>${text}`;
     });
@@ -811,7 +813,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
     //const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨서울 최저/최고 새벽/아침/낮/저녁/최대량` + `\n✨신규 💢레드데이 💫${updatedTime}  🍖쩡햄Live`;
     //const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${updatedTime} 🍖쩡햄Live`;
     //const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨신규 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${updatedTime} 🍖<a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:underline;">쩡햄<span style="color:red;">L</span>ive</a>`;
-    const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨날짜클릭:7일캐싱 💢레드데이 ✨신규` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${updatedTime} 🍖<a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:underline;">순대전사</a>\n\n` + supportLine;
+    const full = warningLine + `\n` + weatherLine + `${chunks.join("\n\n")}\n\n` + `✨날짜클릭:7일캐싱 💢레드데이` + `\n✨서울 최저/최고 새벽/아침/낮/밤/최대량` + `\n💫${updatedTime} 🍖<a href="https://www.youtube.com/channel/UChqJ-rp_I9NKwZOtzI11jNw?sub_confirmation=1" target="_blank" style="color:inherit;text-decoration:underline;">순대전사</a>\n\n` + supportLine;
     
     cache.set(dateIso, {
       updated: Date.now(),
