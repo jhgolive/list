@@ -588,7 +588,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
     }
     
     console.log(`${dateIso} 링크수: ${links.length}`);
-
+    
+    /*
     for (const { href, order } of links) {
     
       console.log("➡️ 상세페이지 진입:", href);
@@ -683,7 +684,149 @@ async function fetchEventsForDate(dateIso, datePretty) {
     
       }
     }
+    */
 
+    for (const { href, order } of links) {
+
+      console.log("➡️ 상세페이지 진입:", href);
+    
+      let event = null;
+      const MAX_RETRIES = 2;
+    
+      for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    
+        const detail = await safeNewPage(currentBrowser);
+    
+        try {
+    
+          // 재시도인 경우 로그 표시
+          if (attempt > 0) {
+            console.log(
+              `🔄 제목 null → 재크롤링 ${attempt}/${MAX_RETRIES}:`,
+              href
+            );
+          }
+    
+          await detail.goto(href, {
+            waitUntil: "domcontentloaded",
+            timeout: 30000
+          });
+    
+          console.log("✅ 상세페이지 로딩:", href);
+    
+          await detail.waitForSelector("h1", {
+            timeout: 10000
+          });
+    
+          console.log("✅ 상세 내용 렌더링 완료:", href);
+    
+          event = await detail.evaluate(() => {
+    
+            const title =
+              document.querySelector("h1.text-2xl")?.innerText.trim() || null;
+    
+            const info = {};
+    
+            document
+              .querySelectorAll(".bg-card .flex.items-start")
+              .forEach(div => {
+    
+                const label =
+                  div.querySelector("p.text-xs")?.innerText.trim();
+    
+                const value =
+                  div.querySelector("p.text-sm")?.innerText.trim();
+    
+                if (label && value) {
+                  info[label] = value;
+                }
+              });
+    
+            const organizer = [...document.querySelectorAll("p")]
+              .find(p => p.innerText.trim().startsWith("주최:"))
+              ?.querySelector("span.font-medium")
+              ?.innerText.trim() || null;
+    
+            return {
+              title,
+              date: info["날짜"] || null,
+              time: info["시간"] || null,
+              place: info["장소"] || null,
+              organizer
+            };
+          });
+    
+          console.log("📌 상세 결과:", event.title);
+    
+          // 제목을 정상적으로 가져왔으면 재시도 종료
+          if (event && event.title) {
+            break;
+          }
+    
+          // 제목이 null이면 다음 루프에서 재크롤링
+          if (attempt < MAX_RETRIES) {
+            console.log(
+              `⚠️ 제목 null → ${1000}ms 후 재시도:`,
+              href
+            );
+    
+            await new Promise(r => setTimeout(r, 1000));
+          }
+    
+        } catch (e) {
+    
+          console.log(
+            `⚠️ 상세 페이지 실패 (${attempt + 1}/${MAX_RETRIES + 1}):`,
+            href,
+            e.message
+          );
+    
+          if (attempt < MAX_RETRIES) {
+            await new Promise(r => setTimeout(r, 1000));
+          }
+    
+        } finally {
+    
+          await detail.close().catch(() => {});
+    
+        }
+      }
+    
+      // =====================
+      // 최종 결과 처리
+      // =====================
+    
+      if (event && event.title) {
+    
+        const kstTime = convertTimeRangeToKST(event.time);
+    
+        const [startStr, endStr] =
+          kstTime?.split("~").map(t => t.trim()) || [];
+    
+        results.push({
+          text:
+            `: ${event.title}\n` +
+            `주관: ${event.organizer || "-"}\n` +
+            `장소: ${event.place || "-"}\n` +
+            `시간: ${kstTime || "-"}\n` +
+            `<a href="${href}" target="_blank">${href}</a>`,
+    
+          start: startStr ? timeToNumber(startStr) : 0,
+          end: endStr ? timeToNumber(endStr) : 9999,
+          hasEnd: !!endStr,
+          order
+        });
+    
+      } else {
+    
+        console.log(
+          `❌ ${MAX_RETRIES + 1}회 크롤링 후에도 제목을 가져오지 못함:`,
+          href
+        );
+    
+      }
+    }
+    
     //try {
       //if (!detail.isClosed()) {
         //await detail.close();
