@@ -65,7 +65,9 @@ async function getBrowser() {
 
       browser.on("disconnected", () => {
         console.log("💥 브라우저 연결 끊김 → 초기화");
+      
         browser = null;
+        activePages = 0;
       });
 
       console.log("✅ Puppeteer launched.");
@@ -582,16 +584,29 @@ async function fetchEventsForDate(dateIso, datePretty) {
         await new Promise(r => setTimeout(r, 200));
       }
     
-      activePages++;
-      const page = await browser.newPage();
+      let page;
     
-      const originalClose = page.close.bind(page);
-      page.close = async () => {
-        activePages--;
-        return originalClose();
-      };
+      try {
+        page = await browser.newPage();
+        activePages++;
     
-      return page;
+        const originalClose = page.close.bind(page);
+    
+        page.close = async () => {
+          if (!page.__countedClosed) {
+            page.__countedClosed = true;
+            activePages = Math.max(0, activePages - 1);
+          }
+    
+          return originalClose();
+        };
+    
+        return page;
+    
+      } catch (e) {
+        console.log("⚠️ safeNewPage 실패:", e.message);
+        throw e;
+      }
     }
     
     console.log(`${dateIso} 링크수: ${links.length}`);
@@ -1042,6 +1057,8 @@ async function refreshCache() {
       } catch {}
     
       browser = null;
+      activePages = 0;
+    
       console.log("🧹 브라우저 메모리 정리");
     }
   } finally {
