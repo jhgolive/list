@@ -380,6 +380,40 @@ async function fetchWeather(dateIso) {
 }
 
 // =====================
+// 걸릴 시 다음 날짜로
+// =====================
+function withTimeout(promise, ms, label = "작업") {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(
+        () => reject(new Error(`${label} 타임아웃 (${ms}ms)`)),
+        ms
+      )
+    )
+  ]);
+}
+
+// =====================
+// 강제 타임 아웃
+// =====================
+async function safeClosePage(page, timeout = 3000) {
+  if (!page) return;
+
+  try {
+    if (page.isClosed()) return;
+
+    await Promise.race([
+      page.close().catch(() => {}),
+      new Promise(resolve => setTimeout(resolve, timeout))
+    ]);
+
+  } catch (e) {
+    console.log("⚠️ 페이지 close 실패/타임아웃:", e.message);
+  }
+}
+    
+// =====================
 // 날짜 클릭
 // =====================
 function getNextCachedDate(currentDateIso) {
@@ -610,7 +644,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
     }
     
     console.log(`${dateIso} 링크수: ${links.length}`);
-    
+
     /*
     for (const { href, order } of links) {
     
@@ -714,7 +748,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
     
       let event = null;
       const MAX_RETRIES = 2;
-    
+
+      /*
       for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     
         const detail = await safeNewPage(currentBrowser);
@@ -808,9 +843,113 @@ async function fetchEventsForDate(dateIso, datePretty) {
           }
     
         } finally {
-    
-          await detail.close().catch(() => {});
-    
+          await safeClosePage(detail, 3000);
+        }
+      }
+      */
+
+      for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+
+        const detail = await safeNewPage(currentBrowser);
+      
+        try {
+      
+          if (attempt > 0) {
+            console.log(
+              `🔄 제목 null → 재크롤링 ${attempt}/${MAX_RETRIES}:`,
+              href
+            );
+          }
+      
+          await detail.goto(href, {
+            waitUntil: "domcontentloaded",
+            timeout: 30000
+          });
+      
+          console.log("✅ 상세페이지 로딩:", href);
+      
+          await detail.waitForSelector("h1", {
+            timeout: 10000
+          });
+      
+          console.log("✅ 상세 내용 렌더링 완료:", href);
+      
+          event = await detail.evaluate(() => {
+      
+            const title =
+              document.querySelector("h1.text-2xl")
+                ?.innerText
+                .trim() || null;
+      
+            const info = {};
+      
+            document
+              .querySelectorAll(".bg-card .flex.items-start")
+              .forEach(div => {
+      
+                const label =
+                  div.querySelector("p.text-xs")
+                    ?.innerText
+                    .trim();
+      
+                const value =
+                  div.querySelector("p.text-sm")
+                    ?.innerText
+                    .trim();
+      
+                if (label && value) {
+                  info[label] = value;
+                }
+              });
+      
+            const organizer = [...document.querySelectorAll("p")]
+              .find(p =>
+                p.innerText.trim().startsWith("주최:")
+              )
+              ?.querySelector("span.font-medium")
+              ?.innerText
+              .trim() || null;
+      
+            return {
+              title,
+              date: info["날짜"] || null,
+              time: info["시간"] || null,
+              place: info["장소"] || null,
+              organizer
+            };
+          });
+      
+          console.log("📌 상세 결과:", event.title);
+      
+          if (event && event.title) {
+            break;
+          }
+      
+          if (attempt < MAX_RETRIES) {
+            console.log(
+              `⚠️ 제목 null → ${1000}ms 후 재시도:`,
+              href
+            );
+      
+            await new Promise(r => setTimeout(r, 1000));
+          }
+      
+        } catch (e) {
+      
+          console.log(
+            `⚠️ 상세 페이지 실패 (${attempt + 1}/${MAX_RETRIES + 1}):`,
+            href,
+            e.message
+          );
+      
+          if (attempt < MAX_RETRIES) {
+            await new Promise(r => setTimeout(r, 1000));
+          }
+      
+        } finally {
+      
+          // 🔥 close가 무한 대기하지 않도록
+          await safeClosePage(detail, 3000);
         }
       }
     
@@ -1026,7 +1165,7 @@ async function refreshCache() {
     const validDates = new Set();
 
     //몇일치
-    for (let i = 0; i < 7; i++) {
+    /* for (let i = 0; i < 7; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       const iso = formatYYYYMMDD(date);
@@ -1034,8 +1173,27 @@ async function refreshCache() {
 
       validDates.add(iso);
       await fetchEventsForDate(iso, pretty);
+    } */
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+    
+      const iso = formatYYYYMMDD(date);
+      const pretty = formatKoreanDate(date);
+    
+      validDates.add(iso);
+    
+      try {
+        await withTimeout(
+          fetchEventsForDate(iso, pretty),
+          5 * 60 * 1000,
+          `${iso} 캐시 갱신`
+        );
+      } catch (e) {
+        console.error(`❌ ${iso} 캐시 갱신 타임아웃:`, e.message);
+      }
     }
-
+    
     // 🔥 7일 밖 캐시 삭제
     for (const key of cache.keys()) {
       if (!validDates.has(key)) {
