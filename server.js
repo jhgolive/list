@@ -557,6 +557,20 @@ async function fetchEventsForDate(dateIso, datePretty) {
       timeout: 60000
     });
     
+    /* const links = await page.evaluate(() =>
+      Array.from(document.querySelectorAll("[data-event-id]"))
+        .map((el, i) => ({
+          href: new URL(
+            `/events/${el.dataset.eventId}`,
+            location.origin
+          ).href,
+          order: i
+        }))
+        .filter((v, i, arr) =>
+          arr.findIndex(x => x.href === v.href) === i
+        )
+    ); */
+
     const links = await page.evaluate(() =>
       Array.from(document.querySelectorAll("[data-event-id]"))
         .map((el, i) => ({
@@ -564,6 +578,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
             `/events/${el.dataset.eventId}`,
             location.origin
           ).href,
+          eventId: Number(el.dataset.eventId),
           order: i
         }))
         .filter((v, i, arr) =>
@@ -742,7 +757,8 @@ async function fetchEventsForDate(dateIso, datePretty) {
     }
     */
 
-    for (const { href, order } of links) {
+    //for (const { href, order } of links) {
+    for (const { href, order, eventId } of links) {
 
       console.log("➡️ 상세페이지 진입:", href);
     
@@ -975,6 +991,7 @@ async function fetchEventsForDate(dateIso, datePretty) {
           start: startStr ? timeToNumber(startStr) : 0,
           end: endStr ? timeToNumber(endStr) : 9999,
           hasEnd: !!endStr,
+          eventId,
           order
         });
     
@@ -1002,8 +1019,13 @@ async function fetchEventsForDate(dateIso, datePretty) {
     //const formatted = results.map((r, i) => `💥No${i + 1}${r.text.replace(/\n/g, "\n⚡")}`);
     const NEW_COUNT = 3;
     //const newOrders = results
+    //const newOrders = [...results]
+      //.sort((a, b) => b.order - a.order)
+      //.slice(0, NEW_COUNT)
+      //.map(r => r.order);
+
     const newOrders = [...results]
-      .sort((a, b) => b.order - a.order)
+      .sort((a, b) => b.eventId - a.eventId)
       .slice(0, NEW_COUNT)
       .map(r => r.order);
     
@@ -1087,13 +1109,13 @@ async function fetchEventsForDate(dateIso, datePretty) {
         //return `⚡${line}`;
       //}).join("\n");
       
-      //if (isNew) {
-        //text += `✨\n${rest}`;
-      //} else {
-        //text += `\n${rest}`;
-      //}
+      if (isNew) {
+        text += `✨\n${rest}`;
+      } else {
+        text += `\n${rest}`;
+      }
 
-      text += `\n${rest}`;
+      //text += `\n${rest}`;
       
       //return `💥No${i + 1}${text}`; 번호
       return `💥No<span style="color:darkorange;font-weight:bold;">${i + 1}</span>${text}`;
